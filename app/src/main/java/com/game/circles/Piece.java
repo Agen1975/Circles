@@ -10,7 +10,7 @@ public class Piece {
 
     public int color;
     public Corner corner;
-
+    public boolean Composite = false;
     public boolean Selected  = false;
 
     public Piece(int color, Corner corner) {

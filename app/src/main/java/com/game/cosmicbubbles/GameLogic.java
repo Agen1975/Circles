@@ -108,7 +108,8 @@ public class GameLogic {
             board.cells[x + 1][y + 1].clear();  // Top-Right
             board.cells[x][y].clear();          // Bottom-Left
             board.cells[x + 1][y].clear();      // Bottom-Right
-            score += 10;
+            score +=  5;
+
         }
 
     }

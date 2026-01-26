@@ -1,4 +1,4 @@
-package com.game.circles;
+package com.game.cosmicbubbles;
 
 public class Piece {
     public enum Corner {

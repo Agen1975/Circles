@@ -1,4 +1,4 @@
-package com.game.circles;
+package com.game.cosmicbubbles;
 
 import android.app.Activity;
 import android.os.Bundle;

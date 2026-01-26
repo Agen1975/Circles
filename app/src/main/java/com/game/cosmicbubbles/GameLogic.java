@@ -1,7 +1,4 @@
-package com.game.circles;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+package com.game.cosmicbubbles;
 
 import java.util.*;
 public class GameLogic {
@@ -111,9 +108,9 @@ public class GameLogic {
             board.cells[x + 1][y + 1].clear();  // Top-Right
             board.cells[x][y].clear();          // Bottom-Left
             board.cells[x + 1][y].clear();      // Bottom-Right
-
+            score += 10;
         }
-        score += 10;
+
     }
     public List<int[]> checkAndMarkCircles(boolean checkComposites) {
         List<int[]> completedCircles = new ArrayList<>();

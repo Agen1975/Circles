@@ -1,4 +1,4 @@
-package com.game.circles
+package com.game.cosmicbubbles
 
 import org.junit.Test
 

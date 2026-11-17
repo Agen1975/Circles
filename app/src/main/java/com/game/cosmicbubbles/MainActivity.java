@@ -22,7 +22,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         progress = Progress.get(this);
-        Ads.start(this);
         Store.get(this);
         if (!progress.tutorialDone() && savedInstanceState == null) {
             firstLaunchHandled = true;
@@ -39,6 +38,8 @@ public class MainActivity extends Activity {
         });
         Store.get(this).restore();
         build();
+        // Not during the first-launch tutorial: the consent form must appear over a visible screen.
+        if (progress.tutorialDone()) Ads.start(this);
     }
 
     @Override

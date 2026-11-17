@@ -32,6 +32,7 @@ public final class Ads {
     private static final int GAMES_BETWEEN = 3;
 
     private static final AtomicBoolean started = new AtomicBoolean(false);
+    private static final AtomicBoolean requested = new AtomicBoolean(false);
     private static InterstitialAd interstitial;
     private static RewardedAd rewarded;
     private static boolean loadingInterstitial, loadingRewarded;
@@ -45,11 +46,12 @@ public final class Ads {
 
     /** Call from the first activity. Shows the consent form where the law requires it. */
     public static void start(Activity a) {
-        if (!configured() || started.get()) return;
+        if (!configured() || !requested.compareAndSet(false, true)) return;
         // Wait until the menu has drawn: starting the SDK's WebViews during the first frames can
         // stall the app's rendering (seen as a black screen on the emulator).
         a.getWindow().getDecorView().postDelayed(() -> {
-            if (!a.isFinishing() && !a.isDestroyed()) startNow(a);
+            if (!a.isFinishing() && !a.isDestroyed() && a.hasWindowFocus()) startNow(a);
+            else requested.set(false); // try again next time the menu is shown
         }, 2500);
     }
 

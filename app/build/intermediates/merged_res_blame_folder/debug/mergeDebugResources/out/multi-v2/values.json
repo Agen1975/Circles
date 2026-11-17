@@ -6,6 +6,57 @@
                 {
                     "source": "/Users/alexey/StudioProjects/Circles/app/src/main/res/values/themes.xml",
                     "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "7",
+                        "endColumns": "12",
+                        "endOffsets": "426"
+                    },
+                    "to": {
+                        "startLines": "5",
+                        "startColumns": "4",
+                        "startOffsets": "210",
+                        "endLines": "10",
+                        "endColumns": "12",
+                        "endOffsets": "581"
+                    }
+                },
+                {
+                    "source": "/Users/alexey/StudioProjects/Circles/app/src/main/res/values/strings.xml",
+                    "from": {
+                        "startLines": "-1,2",
+                        "startColumns": "-1,4",
+                        "startOffsets": "-1,68",
+                        "endColumns": "-1,56",
+                        "endOffsets": "-1,120"
+                    },
+                    "to": {
+                        "startLines": "3,4",
+                        "startColumns": "4,4",
+                        "startOffsets": "101,153",
+                        "endColumns": "51,56",
+                        "endOffsets": "148,205"
+                    }
+                },
+                {
+                    "source": "/Users/alexey/StudioProjects/Circles/app/src/main/res/values/colors.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "45",
+                        "endOffsets": "96"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-mergeDebugResources-1:/values/values.xml",
+            "map": [
+                {
+                    "source": "/Users/alexey/StudioProjects/Circles/app/src/main/res/values/themes.xml",
+                    "from": {
                         "startLines": "3",
                         "startColumns": "4",
                         "startOffsets": "56",

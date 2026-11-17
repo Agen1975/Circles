@@ -1,70 +1,106 @@
 [
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-hdpi_ic_launcher_round.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-hdpi/ic_launcher_round.webp"
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_win.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_win.wav"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/xml_backup_rules.xml.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/xml/backup_rules.xml"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/xml_data_extraction_rules.xml.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/xml/data_extraction_rules.xml"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/drawable/ic_launcher_foreground.xml"
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_bomb.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_bomb.wav"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-mdpi_ic_launcher.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-mdpi/ic_launcher.webp"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-xxhdpi_ic_launcher.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-xxhdpi/ic_launcher.webp"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/xml_backup_rules.xml.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/xml/backup_rules.xml"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-xhdpi_ic_launcher_round.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-xhdpi/ic_launcher_round.webp"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-xxxhdpi/ic_launcher.webp"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-xxxhdpi/ic_launcher_round.webp"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-hdpi/ic_launcher.webp"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-xxxhdpi_ic_launcher.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-xxxhdpi/ic_launcher.webp"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/drawable_ic_launcher_background.xml.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/drawable/ic_launcher_background.xml"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/drawable/ic_launcher_background.xml"
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_invalid.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_invalid.wav"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-hdpi_ic_launcher.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-hdpi/ic_launcher.webp"
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_spawn.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_spawn.wav"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/xml_data_extraction_rules.xml.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/xml/data_extraction_rules.xml"
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_drop.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_drop.wav"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-xhdpi_ic_launcher.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-xhdpi/ic_launcher.webp"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-hdpi/ic_launcher_round.webp"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-hdpi_ic_circles.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-hdpi/ic_circles.webp"
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_over.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_over.wav"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-xxhdpi/ic_launcher_round.webp"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-mdpi_ic_launcher_round.webp.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-mdpi/ic_launcher_round.webp"
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_tick.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_tick.wav"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-xhdpi/ic_launcher_round.webp"
     },
     {
-        "merged": "com.game.cosmicbubbles.app-debug-3:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.game.cosmicbubbles.app-main-5:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_pick.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_pick.wav"
+    },
+    {
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-debug-3:/mipmap-hdpi_ic_circles.webp.flat",
+        "source": "/Users/alexey/.gradle/daemon/9.7.0/com.game.cosmicbubbles.app-main-5:/mipmap-hdpi/ic_circles.webp"
+    },
+    {
+        "merged": "com.game.cosmicbubbles.app-debug-3:/raw_sfx_pop.wav.flat",
+        "source": "com.game.cosmicbubbles.app-main-5:/raw/sfx_pop.wav"
     }
 ]

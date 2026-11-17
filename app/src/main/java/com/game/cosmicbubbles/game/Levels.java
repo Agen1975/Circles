@@ -62,7 +62,7 @@ public final class Levels {
             case 1: return "Drag the glowing piece into the gap to complete the circle.";
             case 2: return "Circles next to a matching half clear together. Make 2 circles in one move!";
             case 3: return "Double-tap a piece to rotate it. Turn the odd one to finish the circle.";
-            default: return "Scoring stops new pieces from falling. Watch the markers, then score!";
+            default: return "Scoring stops new pieces from falling. Make 2 circles in a row and nothing drops in between.";
         }
     }
 
@@ -102,10 +102,12 @@ public final class Levels {
                 p[1 * s + 2] = Piece.normal(0, Piece.TR);
                 p[2 * s + 1] = Piece.normal(0, Piece.BL);
                 p[5 * s + 5] = Piece.normal(0, Piece.BR);
-                p[4 * s + 6] = Piece.normal(1, Piece.TL);
+                p[5 * s + 1] = Piece.normal(1, Piece.TL);
+                p[5 * s + 2] = Piece.normal(1, Piece.TR);
                 p[6 * s + 2] = Piece.normal(1, Piece.BR);
+                p[3 * s + 6] = Piece.normal(1, Piece.BL);
                 spawn = 3;
-                goal = new Goal(Goal.CIRCLES, 1, 0);
+                goal = new Goal(Goal.CIRCLES, 2, 0);
                 break;
         }
         return new GameConfig(GameConfig.Mode.TUTORIAL, 42 + step, spawn, 2, 2, 0, 0, 0, false, false,

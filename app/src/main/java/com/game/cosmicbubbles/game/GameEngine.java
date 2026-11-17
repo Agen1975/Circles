@@ -194,7 +194,7 @@ public final class GameEngine {
             st.rotateTokens++;
             res.rotateTokensEarned = 1;
         }
-        if (st.pieceCount() == 0) {
+        if (st.pieceCount() == 0 && cfg.mode != GameConfig.Mode.TUTORIAL) {
             res.boardCleared = true;
             res.points += BOARD_CLEAR_BONUS;
         }

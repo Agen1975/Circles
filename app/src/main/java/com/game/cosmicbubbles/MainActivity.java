@@ -1,14 +1,177 @@
 package com.game.cosmicbubbles;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
+import com.game.cosmicbubbles.game.GameConfig;
+import com.game.cosmicbubbles.game.GameState;
+import com.game.cosmicbubbles.game.Levels;
+
+/** Main menu: modes, progress, achievements, settings. Rebuilt on every resume so numbers stay fresh. */
 public class MainActivity extends Activity {
+    private Progress progress;
+    private boolean firstLaunchHandled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new GameView(this));
+        progress = Progress.get(this);
+        if (!progress.tutorialDone() && savedInstanceState == null) {
+            firstLaunchHandled = true;
+            startActivity(GameActivity.intent(this, Levels.tutorial(1), false));
+        }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        build();
+    }
+
+    private void build() {
+        Theme t = progress.theme();
+        int pad = Ui.dp(this, 24);
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setPadding(pad, pad, pad, pad);
+
+        TextView title = Ui.text(this, t, getString(R.string.app_name), 36, true, false);
+        title.setGravity(Gravity.CENTER);
+        col.addView(title);
+        TextView tag = Ui.text(this, t, "Complete the circles", 15, false, true);
+        tag.setGravity(Gravity.CENTER);
+        col.addView(tag);
+
+        // Player level and XP progress
+        int level = progress.level(), xp = progress.xp();
+        int lo = Progress.xpForLevel(level), hi = Progress.xpForLevel(level + 1);
+        TextView lv = Ui.text(this, t, "Level " + level + "  ·  " + (xp - lo) + " / " + (hi - lo) + " XP", 14, true, false);
+        lv.setPadding(0, Ui.dp(this, 20), 0, Ui.dp(this, 6));
+        col.addView(lv);
+        ProgressBar bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        bar.setMax(hi - lo);
+        bar.setProgress(xp - lo);
+        bar.setProgressTintList(android.content.res.ColorStateList.valueOf(t.accent));
+        bar.setProgressBackgroundTintList(android.content.res.ColorStateList.valueOf(t.panel));
+        col.addView(bar);
+        TextView stats = Ui.text(this, t, "Undos " + progress.undoTokens() + "  ·  Hints " + progress.hintTokens()
+                + "  ·  Daily streak " + progress.dailyStreak(), 13, false, true);
+        stats.setPadding(0, Ui.dp(this, 6), 0, Ui.dp(this, 8));
+        col.addView(stats);
+
+        // Continue
+        String saved = progress.savedGame("classic");
+        GameState s = saved == null ? null : GameState.decode(saved, GameConfig.SIZE);
+        if (s != null && !s.over) {
+            col.addView(Ui.button(this, t, "Continue", "Classic · " + s.score + " points", true,
+                    v -> play(GameConfig.classic(System.nanoTime()), true)));
+        }
+        col.addView(Ui.button(this, t, "Classic", "Best " + progress.best("classic"), s == null || s.over,
+                v -> {
+                    progress.clearGame("classic");
+                    play(GameConfig.classic(System.nanoTime()), false);
+                }));
+
+        int today = Progress.today();
+        int dailyBest = progress.dailyBest(today);
+        col.addView(Ui.button(this, t, "Daily puzzle", dailyBest >= 0 ? "Done today · " + dailyBest + " points"
+                        : "Same board for everyone · 30 moves", false,
+                v -> play(GameConfig.daily(today), true)));
+        col.addView(Ui.button(this, t, "Journey", progress.totalStars(Levels.JOURNEY_COUNT) + " / "
+                        + (Levels.JOURNEY_COUNT * 3) + " stars · level " + Math.min(progress.journeyUnlocked(), Levels.JOURNEY_COUNT),
+                false, v -> {
+                    startActivity(new android.content.Intent(this, JourneyActivity.class));
+                    Ui.fade(this);
+                }));
+        col.addView(Ui.button(this, t, "Blitz", GameActivity.BLITZ_SECONDS + " seconds · best " + progress.best("blitz"),
+                false, v -> play(GameConfig.blitz(System.nanoTime(), GameActivity.BLITZ_SECONDS), false)));
+        col.addView(Ui.button(this, t, "Zen", "No game over · relax", false,
+                v -> play(GameConfig.zen(System.nanoTime()), true)));
+
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setPadding(0, Ui.dp(this, 10), 0, 0);
+        TextView how = Ui.button(this, t, "How to play", null, false, v -> play(Levels.tutorial(1), false));
+        TextView ach = Ui.button(this, t, "Awards", null, false, v -> showAchievements());
+        TextView set = Ui.button(this, t, "Settings", null, false, v -> showSettings());
+        for (TextView b : new TextView[]{how, ach, set}) {
+            b.setTextSize(14);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+            lp.setMargins(Ui.dp(this, 4), 0, Ui.dp(this, 4), 0);
+            row.addView(b, lp);
+        }
+        col.addView(row);
+
+        ScrollView scroll = new ScrollView(this);
+        scroll.setBackground(Ui.background(t));
+        scroll.addView(col);
+        Ui.padForInsets(scroll);
+        setContentView(scroll);
+        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+    }
+
+    private void play(GameConfig cfg, boolean resume) {
+        startActivity(GameActivity.intent(this, cfg, resume));
+        Ui.fade(this);
+    }
+
+    private void showAchievements() {
+        StringBuilder b = new StringBuilder();
+        int got = 0;
+        for (Achievements.Def d : Achievements.ALL) {
+            boolean has = progress.has(d.id);
+            if (has) got++;
+            b.append(has ? "✓  " : "○  ").append(d.title).append("\n      ").append(d.desc).append("\n\n");
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle("Awards  " + got + "/" + Achievements.ALL.length)
+                .setMessage(b.toString().trim() + "\n\nEach award gives 1 hint.")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+    private void showSettings() {
+        String[] items = {"Sound", "Haptics", "Colour-blind symbols"};
+        boolean[] checked = {progress.sound(), progress.haptics(), progress.colorblind()};
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle("Settings")
+                .setMultiChoiceItems(items, checked, (d, which, on) -> {
+                    if (which == 0) progress.setSound(on);
+                    else if (which == 1) progress.setHaptics(on);
+                    else progress.setColorblind(on);
+                })
+                .setNeutralButton("Theme", (d, w) -> showThemes())
+                .setPositiveButton("Done", null)
+                .show();
+    }
+
+    private void showThemes() {
+        Theme[] all = Theme.ALL;
+        String[] names = new String[all.length];
+        int current = 0;
+        for (int i = 0; i < all.length; i++) {
+            boolean open = progress.isThemeUnlocked(all[i]);
+            names[i] = all[i].name + (open ? "" : "  (unlocks at level " + all[i].unlockLevel + ")");
+            if (all[i].id.equals(progress.theme().id)) current = i;
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle("Theme")
+                .setSingleChoiceItems(names, current, (d, which) -> {
+                    if (progress.isThemeUnlocked(all[which])) {
+                        progress.setTheme(all[which]);
+                        d.dismiss();
+                        build();
+                    } else {
+                        android.widget.Toast.makeText(this, "Reach level " + all[which].unlockLevel
+                                + " to unlock " + all[which].name, android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .show();
+    }
 }

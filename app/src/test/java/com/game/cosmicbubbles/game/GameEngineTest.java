@@ -163,8 +163,8 @@ public class GameEngineTest {
         int before = e.state().rotateTokens;
         MoveResult r = e.move(at(6, 6), at(3, 3));
         assertEquals(2, r.circles.size());
-        assertTrue(r.boardCleared);
-        assertEquals(30 + GameEngine.BOARD_CLEAR_BONUS, r.points);
+        assertFalse(r.boardCleared); // no board-clear bonus in the tutorial
+        assertEquals(30, r.points);
         assertEquals(before + 1, e.state().rotateTokens);
         assertTrue(r.won);
     }
@@ -396,6 +396,10 @@ public class GameEngineTest {
         assertNotNull(t1.hint());
         GameEngine t4 = new GameEngine(Levels.tutorial(4));
         int[] h = t4.hint();
+        MoveResult first = t4.move(h[0], h[1]);
+        assertTrue(first.skippedSpawn);
+        assertFalse(first.won);
+        h = t4.hint();
         assertNotNull(h);
         assertTrue(t4.move(h[0], h[1]).won);
     }

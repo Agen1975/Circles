@@ -1,0 +1,17 @@
+com.game.cosmicbubbles:xml/data_extraction_rules = 0x7f060001
+com.game.cosmicbubbles:xml/backup_rules = 0x7f060000
+com.game.cosmicbubbles:drawable/ic_launcher_background = 0x7f020001
+com.game.cosmicbubbles:color/white = 0x7f010006
+com.game.cosmicbubbles:color/teal_700 = 0x7f010005
+com.game.cosmicbubbles:mipmap/ic_launcher = 0x7f030001
+com.game.cosmicbubbles:drawable/$ic_launcher_foreground__0 = 0x7f020000
+com.game.cosmicbubbles:color/purple_700 = 0x7f010003
+com.game.cosmicbubbles:mipmap/ic_circles = 0x7f030000
+com.game.cosmicbubbles:color/purple_500 = 0x7f010002
+com.game.cosmicbubbles:color/purple_200 = 0x7f010001
+com.game.cosmicbubbles:style/Theme.Circles = 0x7f050000
+com.game.cosmicbubbles:drawable/ic_launcher_foreground = 0x7f020002
+com.game.cosmicbubbles:string/app_name = 0x7f040000
+com.game.cosmicbubbles:color/teal_200 = 0x7f010004
+com.game.cosmicbubbles:mipmap/ic_launcher_round = 0x7f030002
+com.game.cosmicbubbles:color/black = 0x7f010000

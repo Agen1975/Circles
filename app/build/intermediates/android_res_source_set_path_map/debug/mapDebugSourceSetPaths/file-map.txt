@@ -1,8 +1,0 @@
-com.game.cosmicbubbles.app-pngs-0 /Users/alexey/StudioProjects/Circles/app/build/generated/res/pngs/debug
-com.game.cosmicbubbles.app-updated_navigation_xml-1 /Users/alexey/StudioProjects/Circles/app/build/generated/updated_navigation_xml/debug
-com.game.cosmicbubbles.app-packageDebugResources-2 /Users/alexey/StudioProjects/Circles/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
-com.game.cosmicbubbles.app-packageDebugResources-3 /Users/alexey/StudioProjects/Circles/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
-com.game.cosmicbubbles.app-debug-4 /Users/alexey/StudioProjects/Circles/app/build/intermediates/merged_res/debug/mergeDebugResources
-com.game.cosmicbubbles.app-debug-5 /Users/alexey/StudioProjects/Circles/app/src/debug/res
-com.game.cosmicbubbles.app-main-6 /Users/alexey/StudioProjects/Circles/app/src/main/res
-gradleHome-0 /Users/alexey/.gradle

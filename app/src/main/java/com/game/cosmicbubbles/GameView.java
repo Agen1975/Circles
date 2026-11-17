@@ -54,6 +54,14 @@ public class GameView extends View {
         void startGame(GameConfig cfg, boolean resume);
 
         void share(String text);
+
+        /** Runs {@code next} after an interstitial if one is due (only called after a finished game). */
+        void afterGame(Runnable next);
+
+        boolean rewardedReady();
+
+        /** Shows a rewarded ad; {@code onReward} runs only if it was watched through. */
+        void watchAd(Runnable onReward);
     }
 
     private static final int NONE = -2;
@@ -633,10 +641,16 @@ public class GameView extends View {
     private void drawTools(Canvas c) {
         boolean tutorial = cfg.mode == GameConfig.Mode.TUTORIAL;
         int undoCount = freeUndos + progress.undoTokens();
-        drawToolButton(c, undoBtn, "Undo", tutorial ? null : String.valueOf(undoCount), engine.canUndo());
-        drawToolButton(c, hintBtn, "Hint", tutorial ? null : String.valueOf(progress.hintTokens()), true);
+        boolean ad = host.rewardedReady();
+        drawToolButton(c, undoBtn, "Undo", tutorial ? null : badge(undoCount, ad), engine.canUndo());
+        drawToolButton(c, hintBtn, "Hint", tutorial ? null : badge(progress.hintTokens(), ad), true);
         drawToolButton(c, rotateBtn, "Rotate", String.valueOf(engine.state().rotateTokens),
                 engine.state().rotateTokens > 0);
+    }
+
+    /** Token count, or "AD" when empty but a rewarded ad can refill it. */
+    private static String badge(int count, boolean adReady) {
+        return count > 0 || !adReady ? String.valueOf(count) : "AD";
     }
 
     private void drawToolButton(Canvas c, RectF r, String label, String count, boolean enabled) {
@@ -1171,6 +1185,13 @@ public class GameView extends View {
         }
         if (freeUndos > 0) freeUndos--;
         else if (!progress.useUndo()) {
+            if (host.rewardedReady()) {
+                host.watchAd(() -> {
+                    progress.addUndo(1);
+                    doUndo();
+                });
+                return;
+            }
             fb.reject();
             showMessage("No undos left. Earn more from daily puzzles and achievements", theme.textDim);
             return;
@@ -1201,6 +1222,13 @@ public class GameView extends View {
             return;
         }
         if (cfg.mode != GameConfig.Mode.TUTORIAL && !progress.useHint()) {
+            if (host.rewardedReady()) {
+                host.watchAd(() -> {
+                    progress.addHint(1);
+                    doHint();
+                });
+                return;
+            }
             fb.reject();
             showMessage("No hints left. Earn more from daily puzzles and achievements", theme.textDim);
             return;
@@ -1298,27 +1326,29 @@ public class GameView extends View {
             case JOURNEY:
                 if (st.won && cfg.number < Levels.JOURNEY_COUNT) {
                     overlayButtons.add(new Button("Next level", true,
-                            () -> host.startGame(Levels.journey(cfg.number + 1), false)));
+                            () -> host.afterGame(() -> host.startGame(Levels.journey(cfg.number + 1), false))));
                 }
                 overlayButtons.add(new Button(st.won ? "Replay" : "Retry", !st.won,
-                        () -> host.startGame(Levels.journey(cfg.number), false)));
+                        () -> host.afterGame(() -> host.startGame(Levels.journey(cfg.number), false))));
                 break;
             case DAILY:
                 break;
             default:
-                overlayButtons.add(new Button("Play again", true, () -> host.startGame(newConfigLikeThis(), false)));
+                overlayButtons.add(new Button("Play again", true,
+                        () -> host.afterGame(() -> host.startGame(newConfigLikeThis(), false))));
                 break;
         }
+        int undos = freeUndos + progress.undoTokens();
         boolean canContinue = engine.canUndo() && !st.won && cfg.mode != GameConfig.Mode.BLITZ
-                && cfg.mode != GameConfig.Mode.TUTORIAL && (freeUndos > 0 || progress.undoTokens() > 0);
+                && cfg.mode != GameConfig.Mode.TUTORIAL && (undos > 0 || host.rewardedReady());
         if (canContinue) {
-            overlayButtons.add(new Button("Undo last move (" + (freeUndos + progress.undoTokens()) + ")", false,
-                    this::doUndo));
+            overlayButtons.add(new Button(undos > 0 ? "Undo last move (" + undos + ")"
+                    : "Watch an ad to undo last move", false, this::doUndo));
         }
         if (cfg.mode != GameConfig.Mode.TUTORIAL) {
             overlayButtons.add(new Button("Share", false, () -> host.share(shareText())));
         }
-        overlayButtons.add(new Button("Menu", false, host::openMenu));
+        overlayButtons.add(new Button("Menu", false, () -> host.afterGame(host::openMenu)));
     }
 
     private GameConfig newConfigLikeThis() {

@@ -37,8 +37,23 @@ public final class Progress {
     public void setTheme(Theme t) { p.edit().putString("theme", t.id).apply(); }
 
     public boolean isThemeUnlocked(Theme t) {
-        return level() >= t.unlockLevel || p.getBoolean("theme_owned_" + t.id, false);
+        return premium() || level() >= t.unlockLevel || p.getBoolean("theme_owned_" + t.id, false);
     }
+
+    // ---- purchases and ads
+    public boolean premium() { return p.getBoolean("premium", false); }
+
+    /** Sets Premium; the first time also grants a starter pack of 10 undos and 10 hints. */
+    public void setPremium(boolean v) {
+        SharedPreferences.Editor e = p.edit().putBoolean("premium", v);
+        if (v && !p.getBoolean("premium_bonus", false)) {
+            e.putBoolean("premium_bonus", true).putInt("undo", undoTokens() + 10).putInt("hint", hintTokens() + 10);
+        }
+        e.apply();
+    }
+
+    public int lastAdGame() { return p.getInt("last_ad_game", 0); }
+    public void setLastAdGame(int g) { p.edit().putInt("last_ad_game", g).apply(); }
 
     // ---- bests and saved games
     public int best(String key) { return p.getInt("best_" + key, 0); }

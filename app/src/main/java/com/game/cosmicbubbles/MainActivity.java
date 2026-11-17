@@ -22,6 +22,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         progress = Progress.get(this);
+        Ads.start(this);
+        Store.get(this);
         if (!progress.tutorialDone() && savedInstanceState == null) {
             firstLaunchHandled = true;
             startActivity(GameActivity.intent(this, Levels.tutorial(1), false));
@@ -31,7 +33,18 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Store.get(this).setListener(msg -> {
+            if (msg != null) android.widget.Toast.makeText(this, msg, android.widget.Toast.LENGTH_LONG).show();
+            build();
+        });
+        Store.get(this).restore();
         build();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Store.get(this).setListener(null);
     }
 
     private void build() {
@@ -60,7 +73,7 @@ public class MainActivity extends Activity {
         bar.setProgressTintList(android.content.res.ColorStateList.valueOf(t.accent));
         bar.setProgressBackgroundTintList(android.content.res.ColorStateList.valueOf(t.panel));
         col.addView(bar);
-        TextView stats = Ui.text(this, t, "Undos " + progress.undoTokens() + "  ·  Hints " + progress.hintTokens()
+        TextView stats = Ui.text(this, t, (progress.premium() ? "Premium  ·  " : "") + "Undos " + progress.undoTokens() + "  ·  Hints " + progress.hintTokens()
                 + "  ·  Daily streak " + progress.dailyStreak(), 13, false, true);
         stats.setPadding(0, Ui.dp(this, 6), 0, Ui.dp(this, 8));
         col.addView(stats);
@@ -97,6 +110,8 @@ public class MainActivity extends Activity {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setPadding(0, Ui.dp(this, 10), 0, 0);
+        col.addView(Ui.button(this, t, "Shop", progress.premium() ? "Premium owned · token packs"
+                : "Remove ads · all themes · tokens", false, v -> showShop()));
         TextView how = Ui.button(this, t, "How to play", null, false, v -> play(Levels.tutorial(1), false));
         TextView ach = Ui.button(this, t, "Awards", null, false, v -> showAchievements());
         TextView set = Ui.button(this, t, "Settings", null, false, v -> showSettings());
@@ -147,7 +162,40 @@ public class MainActivity extends Activity {
                     else progress.setColorblind(on);
                 })
                 .setNeutralButton("Theme", (d, w) -> showThemes())
+                .setNegativeButton(Ads.privacyOptionsRequired(this) ? "Privacy" : null,
+                        (d, w) -> Ads.showPrivacyOptions(this))
                 .setPositiveButton("Done", null)
+                .show();
+    }
+
+    private void showShop() {
+        Store store = Store.get(this);
+        if (!store.ready()) {
+            new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                    .setTitle("Shop")
+                    .setMessage("The shop is not available right now. Check your connection and that you are "
+                            + "signed in to Google Play.")
+                    .setPositiveButton("OK", null).show();
+            return;
+        }
+        java.util.List<String> ids = new java.util.ArrayList<>();
+        java.util.List<String> labels = new java.util.ArrayList<>();
+        if (!progress.premium() && store.price(Store.PREMIUM) != null) {
+            ids.add(Store.PREMIUM);
+            labels.add("Premium: no ads, all themes, +10 undos & hints   " + store.price(Store.PREMIUM));
+        }
+        if (store.price(Store.TOKENS_SMALL) != null) {
+            ids.add(Store.TOKENS_SMALL);
+            labels.add("5 undos + 5 hints   " + store.price(Store.TOKENS_SMALL));
+        }
+        if (store.price(Store.TOKENS_LARGE) != null) {
+            ids.add(Store.TOKENS_LARGE);
+            labels.add("20 undos + 20 hints   " + store.price(Store.TOKENS_LARGE));
+        }
+        new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle("Shop")
+                .setItems(labels.toArray(new String[0]), (d, which) -> store.buy(this, ids.get(which)))
+                .setNegativeButton("Close", null)
                 .show();
     }
 

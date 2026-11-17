@@ -82,6 +82,24 @@ public class GameActivity extends Activity implements GameView.Host {
     }
 
     @Override
+    public void afterGame(Runnable next) {
+        Ads.afterGame(this, next);
+    }
+
+    @Override
+    public boolean rewardedReady() {
+        return Ads.rewardedReady();
+    }
+
+    @Override
+    public void watchAd(Runnable onReward) {
+        Ads.showRewarded(this, () -> runOnUiThread(() -> {
+            onReward.run();
+            view.invalidate();
+        }));
+    }
+
+    @Override
     public void share(String text) {
         Intent send = new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text);
         startActivity(Intent.createChooser(send, getString(R.string.share_title)));

@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Signing keys and release outputs: never commit
+*.jks
+*.keystore
+*.pem
+keystore.properties
+/app/release/

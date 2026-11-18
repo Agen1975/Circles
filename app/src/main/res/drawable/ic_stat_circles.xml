@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monochrome status-bar icon: a circle made of four segments. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M11,11 L11,3 A8,8 0 0,0 3,11 Z M13,11 L21,11 A8,8 0 0,0 13,3 Z M13,13 L13,21 A8,8 0 0,0 21,13 Z M11,13 L3,13 A8,8 0 0,0 11,21 Z" />
+</vector>

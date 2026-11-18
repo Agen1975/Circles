@@ -61,6 +61,7 @@ public class GameActivity extends Activity implements GameView.Host {
     protected void onResume() {
         super.onResume();
         view.setPaused(false);
+        Reminders.onAppOpened(this);
     }
 
     @Override

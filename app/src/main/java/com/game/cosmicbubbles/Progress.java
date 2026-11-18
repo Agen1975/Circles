@@ -28,6 +28,8 @@ public final class Progress {
     public void setSound(boolean v) { p.edit().putBoolean("sound", v).apply(); }
     public void setHaptics(boolean v) { p.edit().putBoolean("haptics", v).apply(); }
     public void setColorblind(boolean v) { p.edit().putBoolean("colorblind", v).apply(); }
+    public boolean reminders() { return p.getBoolean("reminders", true); }
+    public void setReminders(boolean v) { p.edit().putBoolean("reminders", v).apply(); }
 
     public Theme theme() {
         Theme t = Theme.byId(p.getString("theme", "space"));

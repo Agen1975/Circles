@@ -39,7 +39,11 @@ public class MainActivity extends Activity {
         Store.get(this).restore();
         build();
         // Not during the first-launch tutorial: the consent form must appear over a visible screen.
-        if (progress.tutorialDone()) Ads.start(this);
+        if (progress.tutorialDone()) {
+            Ads.start(this);
+            Reminders.maybeAskPermission(this);
+        }
+        Reminders.onAppOpened(this);
     }
 
     @Override
@@ -153,14 +157,15 @@ public class MainActivity extends Activity {
     }
 
     private void showSettings() {
-        String[] items = {"Sound", "Haptics", "Colour-blind symbols"};
-        boolean[] checked = {progress.sound(), progress.haptics(), progress.colorblind()};
+        String[] items = {"Sound", "Haptics", "Colour-blind symbols", "Daily reminder (6 pm)"};
+        boolean[] checked = {progress.sound(), progress.haptics(), progress.colorblind(), progress.reminders()};
         new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle("Settings")
                 .setMultiChoiceItems(items, checked, (d, which, on) -> {
                     if (which == 0) progress.setSound(on);
                     else if (which == 1) progress.setHaptics(on);
-                    else progress.setColorblind(on);
+                    else if (which == 2) progress.setColorblind(on);
+                    else Reminders.setEnabled(this, on);
                 })
                 .setNeutralButton("Theme", (d, w) -> showThemes())
                 .setNegativeButton(Ads.privacyOptionsRequired(this) ? "Privacy" : null,

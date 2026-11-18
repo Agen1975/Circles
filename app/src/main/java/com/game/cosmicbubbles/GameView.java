@@ -8,6 +8,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
@@ -85,6 +86,14 @@ public class GameView extends View {
     private final Matrix matrix = new Matrix();
     private Shader bgShader;
     private SweepGradient rainbowShader;
+    /** Unit-radius shaders, positioned per segment with a local matrix (no per-frame allocation). */
+    private final RadialGradient shadeShader = new RadialGradient(0, 0, 1,
+            new int[]{Color.argb(120, 255, 255, 255), Color.argb(0, 255, 255, 255),
+                    Color.argb(0, 0, 0, 0), Color.argb(130, 0, 0, 0)},
+            new float[]{0f, 0.38f, 0.5f, 1f}, Shader.TileMode.CLAMP);
+    private final RadialGradient glossShader = new RadialGradient(0, 0, 1,
+            new int[]{Color.argb(235, 255, 255, 255), Color.argb(170, 255, 255, 255), Color.argb(0, 255, 255, 255)},
+            new float[]{0f, 0.55f, 1f}, Shader.TileMode.CLAMP);
 
     // ---- layout
     private float insetTop, insetBottom;
@@ -723,17 +732,31 @@ public class GameView extends View {
             paint.setAlpha(255);
             return;
         }
-        // inner sheen and rim for a tactile, tile-like look
-        float ri = r * 0.58f;
-        tmp.set(ox - ri, oy - ri, ox + ri, oy + ri);
-        paint.setColor(blend(base, Color.WHITE, 0.22f));
-        paint.setAlpha(alpha * 120 / 255);
+        // Shiny-ball look: shading and highlight are anchored to the whole circle (centre ox, oy),
+        // lit from the top-left, so four segments together read as one glossy ball.
+        matrix.setScale(r * 1.55f, r * 1.55f);
+        matrix.postTranslate(ox - r * 0.35f, oy - r * 0.4f);
+        shadeShader.setLocalMatrix(matrix);
+        paint.setShader(shadeShader);
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(alpha);
         c.drawArc(tmp, start, 90, true, paint);
+
+        matrix.setScale(r * 0.32f, r * 0.18f);
+        matrix.postRotate(-40);
+        matrix.postTranslate(ox - r * 0.42f, oy - r * 0.48f);
+        glossShader.setLocalMatrix(matrix);
+        paint.setShader(glossShader);
+        paint.setAlpha(alpha);
+        c.drawArc(tmp, start, 90, true, paint);
+        paint.setShader(null);
+
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(Math.max(1f, size * 0.035f));
-        paint.setColor(blend(base, Color.BLACK, 0.28f));
-        paint.setAlpha(alpha * 200 / 255);
-        tmp.set(ox - r, oy - r, ox + r, oy + r);
+        paint.setStrokeWidth(Math.max(1f, size * 0.03f));
+        paint.setColor(p.isRainbow() ? Color.rgb(90, 90, 105) : blend(base, Color.BLACK, 0.35f));
+        paint.setAlpha(alpha * 170 / 255);
+        c.drawArc(tmp, start, 90, false, paint);           // outer rim of the ball
+        paint.setAlpha(alpha * 70 / 255);                  // faint seams between segments
         c.drawArc(tmp, start, 90, true, paint);
         paint.setStyle(Paint.Style.FILL);
         paint.setAlpha(255);

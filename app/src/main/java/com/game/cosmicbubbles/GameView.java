@@ -131,7 +131,7 @@ public class GameView extends View {
     private int[] hintMove;
     private long hintUntil;
     private long lastFrame;
-    private boolean rainbowIntroDone;
+    private boolean specialsIntroDone;
 
     // ---- per-game
     private int freeUndos = 1;
@@ -322,7 +322,7 @@ public class GameView extends View {
         c.drawRect(0, 0, getWidth(), getHeight(), paint);
         paint.setShader(null);
 
-        maybeIntroduceRainbow(now);
+        maybeIntroduceSpecials(now);
         computeShake(now);
         updateHidden(now);
         c.save();
@@ -819,28 +819,59 @@ public class GameView extends View {
     }
 
     private void drawBomb(Canvas c, float cx, float cy, float size, int solid, int alpha) {
-        float r = size * 0.3f;
-        paint.setColor(solid >= 0 ? solid : Color.rgb(43, 43, 56));
+        float r = size * 0.33f;
+        float bx = cx, by = cy + size * 0.05f;
+        // Steel-grey body: light enough to stand out on dark boards, with a rim that contrasts on light ones.
+        paint.setColor(solid >= 0 ? solid : Color.rgb(112, 118, 138));
         paint.setAlpha(alpha);
-        c.drawCircle(cx, cy + size * 0.05f, r, paint);
+        c.drawCircle(bx, by, r, paint);
         if (solid >= 0) {
             paint.setAlpha(255);
             return;
         }
+        // same lighting as the circle segments
+        matrix.setScale(r * 1.55f, r * 1.55f);
+        matrix.postTranslate(bx - r * 0.35f, by - r * 0.4f);
+        shadeShader.setLocalMatrix(matrix);
+        paint.setShader(shadeShader);
         paint.setColor(Color.WHITE);
-        paint.setAlpha(alpha * 90 / 255);
-        c.drawCircle(cx - r * 0.35f, cy - r * 0.3f, r * 0.25f, paint);
+        paint.setAlpha(alpha);
+        c.drawCircle(bx, by, r, paint);
+        matrix.setScale(r * 0.32f, r * 0.18f);
+        matrix.postRotate(-40);
+        matrix.postTranslate(bx - r * 0.42f, by - r * 0.48f);
+        glossShader.setLocalMatrix(matrix);
+        paint.setShader(glossShader);
+        paint.setAlpha(alpha);
+        c.drawCircle(bx, by, r, paint);
+        paint.setShader(null);
         paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(Math.max(1f, size * 0.03f));
+        paint.setColor(theme.light ? Color.rgb(45, 45, 60) : Color.WHITE);
+        paint.setAlpha(alpha * (theme.light ? 190 : 130) / 255);
+        c.drawCircle(bx, by, r, paint);
+        // fuse
         paint.setStrokeWidth(size * 0.05f);
-        paint.setColor(Color.rgb(150, 120, 90));
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setColor(Color.rgb(170, 135, 95));
         paint.setAlpha(alpha);
         path.reset();
-        path.moveTo(cx + r * 0.5f, cy - r * 0.7f);
-        path.quadTo(cx + r * 0.9f, cy - r * 1.4f, cx + r * 1.3f, cy - r * 1.2f);
+        path.moveTo(bx + r * 0.5f, by - r * 0.75f);
+        path.quadTo(bx + r * 0.9f, by - r * 1.4f, bx + r * 1.3f, by - r * 1.2f);
         c.drawPath(path, paint);
+        paint.setStrokeCap(Paint.Cap.BUTT);
         paint.setStyle(Paint.Style.FILL);
+        // glowing spark
+        float sx = bx + r * 1.3f, sy = by - r * 1.2f;
+        paint.setColor(Color.rgb(255, 150, 40));
+        paint.setAlpha(alpha * 90 / 255);
+        c.drawCircle(sx, sy, size * 0.11f, paint);
         paint.setColor(theme.accent);
-        c.drawCircle(cx + r * 1.3f, cy - r * 1.2f, size * 0.06f, paint);
+        paint.setAlpha(alpha);
+        c.drawCircle(sx, sy, size * 0.06f, paint);
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(alpha);
+        c.drawCircle(sx, sy, size * 0.025f, paint);
         paint.setAlpha(255);
     }
 
@@ -1195,19 +1226,26 @@ public class GameView extends View {
         add(new FloatText(s, boardRect.centerX(), calloutTop() + line * 40 * dp, color, 28 * dp, at, 1300, true));
     }
 
-    /** The first time ever a rainbow piece is queued, explain what it is. */
-    private void maybeIntroduceRainbow(long now) {
-        if (rainbowIntroDone) return;
-        if (progress.flag("intro_rainbow")) {
-            rainbowIntroDone = true;
+    /** The first time ever a rainbow piece or a bomb is queued, explain what it is. */
+    private void maybeIntroduceSpecials(long now) {
+        if (specialsIntroDone) return;
+        boolean rainbowSeen = progress.flag("intro_rainbow"), bombSeen = progress.flag("intro_bomb");
+        if (rainbowSeen && bombSeen) {
+            specialsIntroDone = true;
             return;
         }
         for (Piece p : engine.state().preview) {
-            if (p != null && p.isRainbow()) {
-                rainbowIntroDone = true;
+            if (p == null) continue;
+            String msg = null;
+            if (p.isRainbow() && !rainbowSeen) {
                 progress.setFlag("intro_rainbow");
-                add(new FloatText("\u2605 Rainbow piece: matches any colour", boardRect.centerX(),
-                        boardRect.bottom + 2 * dp, theme.accent, 15 * dp, now, 4000));
+                msg = "\u2605 Rainbow piece: matches any colour";
+            } else if (p.isBomb() && !bombSeen) {
+                progress.setFlag("intro_bomb");
+                msg = "Bomb: drop it to clear the 3\u00d73 around it";
+            }
+            if (msg != null) {
+                add(new FloatText(msg, boardRect.centerX(), boardRect.bottom + 2 * dp, theme.accent, 15 * dp, now, 4000));
                 return;
             }
         }

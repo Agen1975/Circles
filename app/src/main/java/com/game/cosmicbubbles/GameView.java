@@ -131,6 +131,7 @@ public class GameView extends View {
     private int[] hintMove;
     private long hintUntil;
     private long lastFrame;
+    private boolean rainbowIntroDone;
 
     // ---- per-game
     private int freeUndos = 1;
@@ -223,8 +224,17 @@ public class GameView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         layoutGame(w, h);
         bgShader = new LinearGradient(0, 0, 0, h, theme.bgTop, theme.bgBottom, Shader.TileMode.CLAMP);
-        rainbowShader = new SweepGradient(0, 0, new int[]{theme.piece(0), theme.piece(1), theme.piece(2),
-                theme.piece(3), theme.piece(0)}, null);
+        // Wildcard pieces: a full red-to-violet spectrum inside every 90-degree quarter, so a rainbow
+        // segment never looks like a normal piece with a tint of a neighbouring colour.
+        int[] spectrum = {0xFFFF4D4D, 0xFFFFA63D, 0xFFFFE14D, 0xFF5BD75B, 0xFF4DA6FF, 0xFFB57BFF};
+        int[] rc = new int[spectrum.length * 4 + 1];
+        float[] rp = new float[rc.length];
+        for (int i = 0; i < rc.length; i++) {
+            rc[i] = spectrum[i % spectrum.length];
+            rp[i] = i / (float) (rc.length - 1);
+        }
+        rc[rc.length - 1] = spectrum[0];
+        rainbowShader = new SweepGradient(0, 0, rc, rp);
     }
 
     private boolean hasTray() {
@@ -312,6 +322,7 @@ public class GameView extends View {
         c.drawRect(0, 0, getWidth(), getHeight(), paint);
         paint.setShader(null);
 
+        maybeIntroduceRainbow(now);
         computeShake(now);
         updateHidden(now);
         c.save();
@@ -761,6 +772,14 @@ public class GameView extends View {
         paint.setStyle(Paint.Style.FILL);
         paint.setAlpha(255);
 
+        if (p.isRainbow()) {
+            double ang = Math.toRadians(start + 45);
+            float sx = ox + (float) Math.cos(ang) * r * 0.55f;
+            float sy = oy + (float) Math.sin(ang) * r * 0.55f;
+            drawStar(c, sx + size * 0.01f, sy + size * 0.015f, size * 0.15f, Color.argb(alpha * 90 / 255, 0, 0, 0));
+            drawStar(c, sx, sy, size * 0.15f, Color.argb(alpha, 255, 255, 255));
+            paint.setAlpha(255);
+        }
         if (colorblind && !p.isRainbow()) {
             double ang = Math.toRadians(start + 45);
             float sx = ox + (float) Math.cos(ang) * r * 0.55f;
@@ -1174,6 +1193,24 @@ public class GameView extends View {
 
     private void banner(String s, int color, long at, int line) {
         add(new FloatText(s, boardRect.centerX(), calloutTop() + line * 40 * dp, color, 28 * dp, at, 1300, true));
+    }
+
+    /** The first time ever a rainbow piece is queued, explain what it is. */
+    private void maybeIntroduceRainbow(long now) {
+        if (rainbowIntroDone) return;
+        if (progress.flag("intro_rainbow")) {
+            rainbowIntroDone = true;
+            return;
+        }
+        for (Piece p : engine.state().preview) {
+            if (p != null && p.isRainbow()) {
+                rainbowIntroDone = true;
+                progress.setFlag("intro_rainbow");
+                add(new FloatText("\u2605 Rainbow piece: matches any colour", boardRect.centerX(),
+                        boardRect.bottom + 2 * dp, theme.accent, 15 * dp, now, 4000));
+                return;
+            }
+        }
     }
 
     private void showMessage(String s, int color) {

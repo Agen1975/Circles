@@ -28,6 +28,8 @@ public final class Progress {
     public void setSound(boolean v) { p.edit().putBoolean("sound", v).apply(); }
     public void setHaptics(boolean v) { p.edit().putBoolean("haptics", v).apply(); }
     public void setColorblind(boolean v) { p.edit().putBoolean("colorblind", v).apply(); }
+    public boolean flag(String id) { return p.getBoolean("flag_" + id, false); }
+    public void setFlag(String id) { p.edit().putBoolean("flag_" + id, true).apply(); }
     public boolean reminders() { return p.getBoolean("reminders", true); }
     public void setReminders(boolean v) { p.edit().putBoolean("reminders", v).apply(); }
 

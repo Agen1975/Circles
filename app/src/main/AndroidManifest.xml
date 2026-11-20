@@ -4,6 +4,11 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Advertising ID for AdMob and Firebase Analytics (declared in Play Console). -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <!-- The game is portrait-only, but don't exclude landscape-only devices (Chromebooks, XR) from installing it. -->
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false" />
 
     <application
         android:name=".CirclesApp"

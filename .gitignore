@@ -20,3 +20,7 @@ local.properties
 *.pem
 keystore.properties
 /app/release/
+
+# Firebase Hosting deploy cache and logs
+site/.firebase/
+firebase-debug.log

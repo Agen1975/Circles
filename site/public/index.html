@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cosmic Bubbles</title>
+<meta name="description" content="Cosmic Bubbles: a relaxing puzzle game about completing glowing circles. Free on Google Play.">
+<link rel="icon" href="icon.png">
+<style>
+  :root { --bg: #160a2a; --panel: #241245; --text: #f3eeff; --muted: #bfb2e0; --accent: #b98bff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(ellipse at 30% 20%, #3a1860 0%, var(--bg) 60%) fixed; color: var(--text);
+         font: 17px/1.6 -apple-system, "Segoe UI", Roboto, sans-serif; min-height: 100vh; }
+  main { max-width: 720px; margin: 0 auto; padding: 48px 16px; }
+  header { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  header img { width: 112px; height: 112px; border-radius: 24px; }
+  h1 { font-size: 2.4rem; margin: 0; line-height: 1.1; }
+  .tag { color: var(--muted); margin: 4px 0 0; }
+  a { color: var(--accent); }
+  .play { display: inline-block; margin: 28px 0 8px; padding: 12px 22px; border-radius: 12px; background: var(--accent);
+          color: #1a0b33; font-weight: 700; text-decoration: none; }
+  ul { padding-left: 1.2em; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="Cosmic Bubbles icon">
+    <div>
+      <h1>Cosmic Bubbles</h1>
+      <p class="tag">Complete the circles</p>
+    </div>
+  </header>
+
+  <a class="play" href="https://play.google.com/store/apps/details?id=com.game.cosmicbubbles">Get it on Google Play</a>
+
+  <p>Every piece is one quarter of a glowing bubble. Move pieces anywhere on the 8×8 board and fit four of the same
+     colour together to pop a complete circle. Chain moves to keep the board clear, link circles into clusters, and
+     build a streak of up to ×5.</p>
+  <ul>
+    <li><strong>Classic</strong>: endless play until the board fills up</li>
+    <li><strong>Daily puzzle</strong>: the same board for everyone, 30 moves</li>
+    <li><strong>Journey</strong>: 60 levels with goals and stars</li>
+    <li><strong>Blitz</strong>: as many points as you can in 60 seconds</li>
+    <li><strong>Zen</strong>: no game over, just relax</li>
+  </ul>
+  <p>Leaderboards for Classic, Blitz and the Daily puzzle are on Google Play Games.</p>
+
+  <footer><a href="/privacy">Privacy policy</a></footer>
+</main>
+</body>
+</html>

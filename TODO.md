@@ -36,4 +36,4 @@
 ## Other open items
 
 - Push `feature/engagement` from Android Studio. This shell has no GitHub credentials. Don't merge into master yet.
-- Build a fresh signed release bundle before uploading to Play. The existing `app/release/app-release.aab` is stale. versionCode stays 3.
+- Build a fresh signed release bundle before uploading to Play. The existing `app/release/app-release.aab` is stale. Use versionCode 4 (bumped 2026-11-20 for internal testing).

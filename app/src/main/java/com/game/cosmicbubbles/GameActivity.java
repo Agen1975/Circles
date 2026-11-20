@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.game.cosmicbubbles.game.GameConfig;
 import com.game.cosmicbubbles.game.Levels;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /** Hosts {@link GameView}. The game is described by mode + number + seed in the intent. */
 public class GameActivity extends Activity implements GameView.Host {
@@ -107,7 +108,13 @@ public class GameActivity extends Activity implements GameView.Host {
     }
 
     @Override
-    public void submitScore(GameConfig.Mode mode, int score) {
-        Games.submit(this, mode, score);
+    public void gameEnded(GameConfig cfg, int score, boolean won) {
+        Games.submit(this, cfg.mode, score);
+        Bundle b = new Bundle();
+        b.putString("mode", cfg.mode.name().toLowerCase());
+        if (cfg.mode == GameConfig.Mode.JOURNEY || cfg.mode == GameConfig.Mode.TUTORIAL) b.putLong("level", cfg.number);
+        b.putLong("score", score);
+        b.putLong("success", won ? 1 : 0);
+        FirebaseAnalytics.getInstance(this).logEvent("game_end", b);
     }
 }

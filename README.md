@@ -86,6 +86,7 @@ If you skip a day, the game sends a single friendly reminder at **6 pm** the nex
 - **Premium** (one-time purchase): no interstitial ads, all themes unlocked, and +10 undos and +10 hints.
 - **Token packs:** 5 undos + 5 hints, or 20 undos + 20 hints.
 - **Ads:** an occasional full-screen ad between games, never during play and never in your first 3 games. After that it's at most once every 3 games, and never for Premium players. Rewarded ads are always optional. Ad consent is handled with Google's consent form where required.
+- **Diagnostics:** crash reports (Firebase Crashlytics) and usage statistics (Google Analytics for Firebase), which follow the same consent choices as ads.
 
 ## Look and feel
 

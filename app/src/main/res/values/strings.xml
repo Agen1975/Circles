@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">Cosmic bubbles</string>
     <string name="share_title">Share your score</string>
-    <!-- Play Games Services project ID (Play Console → Play Games Services → Setup). -->
-    <string name="game_services_project_id" translatable="false">253183938686</string>
 </resources>

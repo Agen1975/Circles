@@ -111,6 +111,8 @@ public class MainActivity extends Activity {
                 false, v -> play(GameConfig.blitz(System.nanoTime(), GameActivity.BLITZ_SECONDS), false)));
         col.addView(Ui.button(this, t, "Zen", "No game over · relax", false,
                 v -> play(GameConfig.zen(System.nanoTime()), true)));
+        col.addView(Ui.button(this, t, "Leaderboards", "Classic · Daily puzzle · Blitz on Google Play Games",
+                false, v -> Games.showLeaderboards(this)));
 
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);

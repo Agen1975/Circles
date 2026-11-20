@@ -63,6 +63,9 @@ public class GameView extends View {
 
         /** Shows a rewarded ad; {@code onReward} runs only if it was watched through. */
         void watchAd(Runnable onReward);
+
+        /** Sends a finished game's score to the mode's Play Games leaderboard, if it has one. */
+        void submitScore(GameConfig.Mode mode, int score);
     }
 
     private static final int NONE = -2;
@@ -1360,6 +1363,7 @@ public class GameView extends View {
         accountedCircles = Math.max(accountedCircles, st.circlesTotal);
         add(new Sound(st.won ? Feedback.Sfx.WIN : Feedback.Sfx.OVER, 1f, resultsAt));
         if (cfg.resumable()) progress.clearGame(saveKey());
+        host.submitScore(cfg.mode, st.score);
     }
 
     private void buildResults() {

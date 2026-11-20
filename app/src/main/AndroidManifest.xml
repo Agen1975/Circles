@@ -21,7 +21,7 @@
             android:value="${admobAppId}" />
         <meta-data
             android:name="com.google.android.gms.games.APP_ID"
-            android:value="@string/game_services_project_id" />
+            android:value="@string/app_id" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

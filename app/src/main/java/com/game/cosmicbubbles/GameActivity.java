@@ -105,4 +105,9 @@ public class GameActivity extends Activity implements GameView.Host {
         Intent send = new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text);
         startActivity(Intent.createChooser(send, getString(R.string.share_title)));
     }
+
+    @Override
+    public void submitScore(GameConfig.Mode mode, int score) {
+        Games.submit(this, mode, score);
+    }
 }

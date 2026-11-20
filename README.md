@@ -66,6 +66,7 @@ The game explains each special piece once, the first time it shows up in the tra
 - **Themes:** Space (start), Ocean (level 3), Candy (level 5, light) and Minimal (level 8, light). Change them in Settings → Theme.
 - **Awards:** 14 achievements, such as First circle, Double, Triple, On a roll, Clean slate, Kaboom, 500 club, Week streak and Perfectionist. Each one gives 1 hint.
 - **Daily streak:** play the daily puzzle on consecutive days to grow it.
+- **Leaderboards (Google Play Games):** Classic high score, Daily puzzle and Blitz 60s. Scores are sent automatically when a game ends if you're signed in. Open them from the Leaderboards button on the main menu.
 - **Share:** share your result from the game-over screen.
 
 ## Reminders

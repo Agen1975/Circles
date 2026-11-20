@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Google Play game services IDs. Save this file as res/values/games-ids.xml in your project.-->
+<resources>
+  <!--app_id-->
+  <string name="app_id" translatable="false">253183938686</string>
+  <!--package_name-->
+  <string name="package_name" translatable="false">com.game.cosmicbubbles</string>
+  <!--leaderboard Classic high score-->
+  <string name="leaderboard_classic_high_score" translatable="false">CgkI_qDBl68HEAIQAg</string>
+  <!--leaderboard Daily puzzle-->
+  <string name="leaderboard_daily_puzzle" translatable="false">CgkI_qDBl68HEAIQAw</string>
+  <!--leaderboard Blitz 60s-->
+  <string name="leaderboard_blitz_60s" translatable="false">CgkI_qDBl68HEAIQBA</string>
+</resources>

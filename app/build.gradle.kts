@@ -49,5 +49,6 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     implementation("com.android.billingclient:billing:8.3.0")
     implementation("androidx.work:work-runtime:2.10.0")
+    implementation("com.google.android.gms:play-services-games-v2:22.1.0")
     testImplementation("junit:junit:4.13.2")
 }

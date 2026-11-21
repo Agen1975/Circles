@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
         });
         Store.get(this).restore();
         build();
+        Games.syncAchievements(this);
         // Not during the first-launch tutorial: the consent form must appear over a visible screen.
         if (progress.tutorialDone()) {
             Ads.start(this);
@@ -156,6 +157,7 @@ public class MainActivity extends Activity {
                 .setTitle("Awards  " + got + "/" + Achievements.ALL.length)
                 .setMessage(b.toString().trim() + "\n\nEach award gives 1 hint.")
                 .setPositiveButton("OK", null)
+                .setNeutralButton("Play Games", (dlg, w) -> Games.showAchievements(this))
                 .show();
     }
 

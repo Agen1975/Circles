@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Achievement IDs are looked up by name (Games.achievement), so resource shrinking can't see they're used. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/achievement_*" />

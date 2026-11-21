@@ -109,6 +109,11 @@ public class GameActivity extends Activity implements GameView.Host {
     }
 
     @Override
+    public void awardUnlocked(Achievements.Def d) {
+        Games.unlock(this, d);
+    }
+
+    @Override
     public void gameEnded(GameConfig cfg, int score, boolean won) {
         Games.submit(this, cfg.mode, score);
         Bundle b = new Bundle();

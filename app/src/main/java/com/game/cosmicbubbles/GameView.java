@@ -64,6 +64,9 @@ public class GameView extends View {
         /** Shows a rewarded ad; {@code onReward} runs only if it was watched through. */
         void watchAd(Runnable onReward);
 
+        /** The player just earned an award: unlock it on Play Games too. */
+        void awardUnlocked(Achievements.Def d);
+
         /** A game just ended: report the score to leaderboards and analytics. */
         void gameEnded(GameConfig cfg, int score, boolean won);
     }
@@ -1203,6 +1206,7 @@ public class GameView extends View {
         }
         for (Achievements.Def d : Achievements.afterMove(progress, r, engine.state())) {
             showAchievement(d, end);
+            host.awardUnlocked(d);
         }
         if (r.gameOver) onGameOver(end);
         invalidate();
@@ -1405,6 +1409,7 @@ public class GameView extends View {
         }
         for (Achievements.Def d : Achievements.afterGame(progress, cfg, st, res.stars)) {
             res.lines.add("Achievement: " + d.title + " (+1 hint)");
+            host.awardUnlocked(d);
         }
         if (res.reward != null) res.lines.add(res.reward);
         results = res;

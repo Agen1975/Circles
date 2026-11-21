@@ -5,6 +5,34 @@
   <string name="app_id" translatable="false">253183938686</string>
   <!--package_name-->
   <string name="package_name" translatable="false">com.game.cosmicbubbles</string>
+  <!--achievement First circle-->
+  <string name="achievement_first_circle" translatable="false">CgkI_qDBl68HEAIQBQ</string>
+  <!--achievement Double-->
+  <string name="achievement_double" translatable="false">CgkI_qDBl68HEAIQBg</string>
+  <!--achievement Triple-->
+  <string name="achievement_triple" translatable="false">CgkI_qDBl68HEAIQBw</string>
+  <!--achievement On a roll-->
+  <string name="achievement_on_a_roll" translatable="false">CgkI_qDBl68HEAIQCA</string>
+  <!--achievement Unstoppable-->
+  <string name="achievement_unstoppable" translatable="false">CgkI_qDBl68HEAIQCQ</string>
+  <!--achievement Clean slate-->
+  <string name="achievement_clean_slate" translatable="false">CgkI_qDBl68HEAIQCg</string>
+  <!--achievement Kaboom-->
+  <string name="achievement_kaboom" translatable="false">CgkI_qDBl68HEAIQCw</string>
+  <!--achievement 500 club-->
+  <string name="achievement_500_club" translatable="false">CgkI_qDBl68HEAIQDA</string>
+  <!--achievement High roller-->
+  <string name="achievement_high_roller" translatable="false">CgkI_qDBl68HEAIQDQ</string>
+  <!--achievement Collector-->
+  <string name="achievement_collector" translatable="false">CgkI_qDBl68HEAIQDg</string>
+  <!--achievement Daily player-->
+  <string name="achievement_daily_player" translatable="false">CgkI_qDBl68HEAIQDw</string>
+  <!--achievement Week streak-->
+  <string name="achievement_week_streak" translatable="false">CgkI_qDBl68HEAIQEA</string>
+  <!--achievement Explorer-->
+  <string name="achievement_explorer" translatable="false">CgkI_qDBl68HEAIQEQ</string>
+  <!--achievement Perfectionist-->
+  <string name="achievement_perfectionist" translatable="false">CgkI_qDBl68HEAIQEg</string>
   <!--leaderboard Classic high score-->
   <string name="leaderboard_classic_high_score" translatable="false">CgkI_qDBl68HEAIQAg</string>
   <!--leaderboard Daily puzzle-->

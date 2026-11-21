@@ -33,6 +33,26 @@
   - "Age Signals API and User Data policy" (answer/16585319).
 - Docs: https://developer.android.com/google/play/age-signals/overview
 
+## Play Games achievements (almost done, 2026-11-21)
+
+The code is in commit 541d3db, and all 14 achievement IDs are in `games-ids.xml` (checked in the release build). Remaining steps:
+- Review and publish the Play Games Services configuration so the achievements go live. Until then, only testers can unlock them.
+- Test on the internal track: earn an award, then open Awards → Play Games.
+
+## After achievements: "Winter Lights" seasonal theme (idea agreed 2026-11-21)
+
+**Goal:** a limited-time theme that gives lapsed players a reason to return, plus a Play Console Promotional content (LiveOps) event card for free visibility.
+
+**Plan:**
+- **Season:** about Dec 1 to Jan 6. The dates are built into the app, with no server or network call.
+- **Unlocking:** the theme can be unlocked only during the season (for example, by finishing one daily puzzle), and the player keeps it afterwards. It's never taken away.
+- **Decoration, not just colours:** add a red, green and gold palette in `Theme.java`, plus falling snowflakes on the background and a seasonal sparkle when a circle pops.
+- **Announcing it:** show a menu banner while it's available ("Winter Lights: unlock by Jan 6"), and optionally mention it in the 6 pm reminder.
+- **Premium:** Premium promises "all themes unlocked". Either include seasonal themes for Premium players or change the Shop text to "all standard themes".
+- **Store:** set up a Play Console Promotional content event and refresh one store screenshot during the season.
+- **Later seasons:** use the same mechanism for Spring Bloom (around Easter, calculated per year), Summer and Autumn Harvest (Thanksgiving). Season names work everywhere; the US store text can say "holiday".
+- **Timing:** the update has to be live before Dec 1, so leave time for review and rollout.
+
 ## Other open items
 
 - Push `feature/engagement` from Android Studio. This shell has no GitHub credentials. Don't merge into master yet.

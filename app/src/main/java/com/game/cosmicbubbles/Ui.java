@@ -87,6 +87,24 @@ final class Ui {
         });
     }
 
+    /** Dark status- and navigation-bar icons on light themes, light icons on dark ones. Call after setContentView. */
+    @SuppressWarnings("deprecation")
+    static void systemBars(Activity a, Theme t) {
+        View decor = a.getWindow().getDecorView();
+        if (android.os.Build.VERSION.SDK_INT >= 30) {
+            android.view.WindowInsetsController c = decor.getWindowInsetsController();
+            if (c == null) return;
+            int mask = android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                    | android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+            c.setSystemBarsAppearance(t.light ? mask : 0, mask);
+        } else {
+            int mask = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                    | (android.os.Build.VERSION.SDK_INT >= 26 ? View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR : 0);
+            int f = decor.getSystemUiVisibility();
+            decor.setSystemUiVisibility(t.light ? f | mask : f & ~mask);
+        }
+    }
+
     static void fade(Activity a) {
         a.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }

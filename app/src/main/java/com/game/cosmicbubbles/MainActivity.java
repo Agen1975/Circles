@@ -136,6 +136,7 @@ public class MainActivity extends Activity {
         Ui.padForInsets(scroll);
         setContentView(scroll);
         getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        Ui.systemBars(this, t);
     }
 
     private void play(GameConfig cfg, boolean resume) {

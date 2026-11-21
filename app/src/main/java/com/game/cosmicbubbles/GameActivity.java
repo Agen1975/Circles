@@ -49,6 +49,7 @@ public class GameActivity extends Activity implements GameView.Host {
         boolean resume = i.getBooleanExtra(EXTRA_RESUME, false) || savedInstanceState != null;
         view = new GameView(this, this, configFrom(i), resume);
         setContentView(view);
+        Ui.systemBars(this, Progress.get(this).theme());
     }
 
     @Override

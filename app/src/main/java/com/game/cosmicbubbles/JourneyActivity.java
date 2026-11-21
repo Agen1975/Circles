@@ -83,6 +83,7 @@ public class JourneyActivity extends Activity {
         scroll.addView(col);
         Ui.padForInsets(scroll);
         setContentView(scroll);
+        Ui.systemBars(this, t);
     }
 
     private static String repeat(String s, int n) {

@@ -36,6 +36,6 @@
 ## Other open items
 
 - Push `feature/engagement` from Android Studio. This shell has no GitHub credentials. Don't merge into master yet.
-- Build a fresh signed release bundle before uploading to Play. The existing `app/release/app-release.aab` is stale. Use versionCode 6 (bumped 2026-11-20: 5 added the AD_ID permission, 6 marks the portrait screen as optional).
+- Build a fresh signed release bundle before uploading to Play. The existing `app/release/app-release.aab` is stale. Use versionCode 7 (bumped 2026-11-20: 5 added the AD_ID permission, 6 marks the portrait screen as optional, 7 fixes status-bar icons on light themes).
 - Play Console → App content → **Data safety**: declare what Firebase collects (added 2026-11-20). That's crash logs, diagnostics, app interactions and device or other IDs, collected by Crashlytics and Analytics, processed by Google and not shared. Also update the privacy policy.
 - AdMob → Privacy & messaging: make sure the EU consent message includes Google Analytics for Firebase as a vendor or purpose, so Analytics consent comes from the same form.

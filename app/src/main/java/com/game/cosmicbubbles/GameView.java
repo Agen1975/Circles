@@ -199,9 +199,15 @@ public class GameView extends View {
         }
     }
 
+    /**
+     * Set when the player restarts: this activity's onPause runs before the new game's onCreate,
+     * and saving here would hand the old board straight back to Zen and Daily, which always resume.
+     */
+    private boolean discarded;
+
     /** Called from onPause: keep the game so it survives rotation, calls and app switches. */
     public void save() {
-        if (!cfg.resumable()) return;
+        if (!cfg.resumable() || discarded) return;
         if (engine.state().over) progress.clearGame(saveKey());
         else progress.saveGame(saveKey(), engine.state().encode());
     }
@@ -1609,6 +1615,7 @@ public class GameView extends View {
         overlayButtons.clear();
         overlayButtons.add(new Button("Resume", true, this::closePause));
         overlayButtons.add(new Button("Restart", false, () -> {
+            discarded = true;
             if (cfg.resumable()) progress.clearGame(saveKey());
             GameConfig next = cfg.mode == GameConfig.Mode.CLASSIC || cfg.mode == GameConfig.Mode.ZEN
                     || cfg.mode == GameConfig.Mode.BLITZ ? newConfigLikeThis() : cfg;

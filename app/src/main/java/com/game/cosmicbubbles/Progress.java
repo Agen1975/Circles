@@ -41,7 +41,27 @@ public final class Progress {
     public void setTheme(Theme t) { p.edit().putString("theme", t.id).apply(); }
 
     public boolean isThemeUnlocked(Theme t) {
-        return premium() || level() >= t.unlockLevel || p.getBoolean("theme_owned_" + t.id, false);
+        if (premium() || ownsTheme(t)) return true;
+        return t.season == null && level() >= t.unlockLevel;
+    }
+
+    /** Owned outright (seasonal unlock or purchase), as opposed to unlocked by level or Premium. */
+    public boolean ownsTheme(Theme t) { return p.getBoolean("theme_owned_" + t.id, false); }
+
+    /**
+     * Unlocks the seasonal theme of the season running today, if any and not yet owned.
+     * Returns that theme if it was newly unlocked, else null.
+     */
+    public Theme unlockSeasonalTheme() {
+        Season s = Season.current();
+        if (s == null) return null;
+        for (Theme t : Theme.ALL) {
+            if (t.season == s && !ownsTheme(t)) {
+                p.edit().putBoolean("theme_owned_" + t.id, true).apply();
+                return t;
+            }
+        }
+        return null;
     }
 
     // ---- purchases and ads

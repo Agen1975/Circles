@@ -67,6 +67,9 @@ public class GameView extends View {
         /** The player just earned an award: unlock it on Play Games too. */
         void awardUnlocked(Achievements.Def d);
 
+        /** A seasonal theme was just unlocked: report it to analytics. */
+        void themeUnlocked(Theme t);
+
         /** A game just ended: report the score to leaderboards and analytics. */
         void gameEnded(GameConfig cfg, int score, boolean won);
     }
@@ -91,6 +94,8 @@ public class GameView extends View {
     private final RectF tmp = new RectF();
     private final Matrix matrix = new Matrix();
     private Shader bgShader;
+    /** Falling snow for seasonal themes, else null. */
+    private final Snow snow;
     private SweepGradient rainbowShader;
     /** Unit-radius shaders, positioned per segment with a local matrix (no per-frame allocation). */
     private final RadialGradient shadeShader = new RadialGradient(0, 0, 1,
@@ -156,6 +161,7 @@ public class GameView extends View {
         this.cfg = cfg;
         progress = Progress.get(context);
         theme = progress.theme();
+        snow = theme.snow ? new Snow(getResources().getDisplayMetrics().density) : null;
         colorblind = progress.colorblind();
         fb = new Feedback(context, this);
         fb.sound = progress.sound();
@@ -327,6 +333,7 @@ public class GameView extends View {
         paint.setShader(bgShader);
         c.drawRect(0, 0, getWidth(), getHeight(), paint);
         paint.setShader(null);
+        if (snow != null) snow.draw(c, getWidth(), getHeight(), now);
 
         maybeIntroduceSpecials(now);
         computeShake(now);
@@ -353,6 +360,7 @@ public class GameView extends View {
         boolean animating = !anims.isEmpty() || dragging || Math.abs(displayedScore - engine.state().score) > 0.5f
                 || (hintMove != null && now < hintUntil) || blitzRunning() || resultsPending(now);
         if (animating) postInvalidateOnAnimation();
+        else if (snow != null) postInvalidateDelayed(Snow.FRAME_MS);
     }
 
     private boolean resultsPending(long now) {
@@ -918,8 +926,16 @@ public class GameView extends View {
                 }
                 return true;
             case MotionEvent.ACTION_UP:
-                if (dragging) endDrag();
-                else onTap(x, y);
+                if (dragging) {
+                    // Drop where the finger lifted: when moves are batched (busy frame, fast flick)
+                    // the last ACTION_MOVE can trail the release point by a cell or more.
+                    dragX = x;
+                    dragY = y;
+                    updateHover();
+                    endDrag();
+                } else {
+                    onTap(x, y);
+                }
                 pressSource = NONE;
                 invalidate();
                 return true;
@@ -1144,6 +1160,7 @@ public class GameView extends View {
                     add(new Disc(cx, cy, col, cell * 0.92f, t0, 380));
                     add(new Ring(cx, cy, col, cell * 1.5f, t0 + 60, 420));
                     burst(cx, cy, col, 14, t0 + 40);
+                    if (theme.sparkle) sparkle(cx, cy, t0 + 60);
                 }
                 fb.play(Feedback.Sfx.POP, 1f + 0.09f * (Math.min(r.streak, 8) - 1) + 0.06f * (n - 1), 1f);
                 fb.confirm();
@@ -1279,6 +1296,21 @@ public class GameView extends View {
         add(p);
     }
 
+    /** Seasonal extra on a pop: little gold and white four-point stars that twinkle and drift up. */
+    private void sparkle(float x, float y, long at) {
+        Twinkle tw = new Twinkle(at, 1300);
+        // Festive mix: the theme's first three piece colours (red, green, gold), accent and white.
+        int[] cols = {theme.pieces[0], theme.pieces[1], theme.pieces[2], theme.accent, Color.WHITE};
+        for (int i = 0; i < 13; i++) {
+            double a = (i + fxRandom.nextDouble() * 0.6) * Math.PI * 2 / 13;
+            float r = cell * (0.5f + fxRandom.nextFloat() * 0.95f);
+            tw.add(x + (float) Math.cos(a) * r, y + (float) Math.sin(a) * r,
+                    cols[i % cols.length], dp * (8 + fxRandom.nextFloat() * 6),
+                    fxRandom.nextFloat() * 0.4f);
+        }
+        add(tw);
+    }
+
     private void doUndo() {
         if (cfg.mode == GameConfig.Mode.TUTORIAL) {
             if (engine.undo()) afterUndo();
@@ -1374,6 +1406,7 @@ public class GameView extends View {
         GameState st = engine.state();
         Results res = new Results();
         boolean tutorial = cfg.mode == GameConfig.Mode.TUTORIAL;
+        Theme seasonal = null;
         switch (cfg.mode) {
             case JOURNEY: res.title = st.won ? "Level complete!" : "Out of moves"; break;
             case TUTORIAL: res.title = "Nice!"; break;
@@ -1388,6 +1421,7 @@ public class GameView extends View {
                 if (progress.recordDaily(cfg.number, st.score)) {
                     res.reward = "Daily reward: +1 undo, +1 hint · streak " + progress.dailyStreak();
                 }
+                seasonal = progress.unlockSeasonalTheme();
             }
             res.newBest |= progress.submitBest(bestKey(), st.score) && st.score > 0;
             int xp = st.score / 5 + (st.won ? 25 : 0) + (cfg.mode == GameConfig.Mode.DAILY ? 15 : 0);
@@ -1412,6 +1446,11 @@ public class GameView extends View {
             host.awardUnlocked(d);
         }
         if (res.reward != null) res.lines.add(res.reward);
+        if (seasonal != null) {
+            res.lines.add(seasonal.name + " theme unlocked!");
+            res.lines.add("Yours to keep · Settings → Theme");
+            host.themeUnlocked(seasonal);
+        }
         results = res;
         buildResultButtons();
         if (res.newBest || res.stars == 3) fb.burst(2);
@@ -1803,6 +1842,45 @@ public class GameView extends View {
             paint.setAlpha((int) (220 * (1 - t)));
             c.drawCircle(x, y, r * easeOut(t), paint);
             paint.setStyle(Paint.Style.FILL);
+            paint.setAlpha(255);
+        }
+    }
+
+    /** Four-point stars that pop in, twinkle and fade while drifting upwards. */
+    private final class Twinkle extends Anim {
+        final List<float[]> stars = new ArrayList<>();
+
+        Twinkle(long t0, long dur) {
+            super(t0, dur);
+        }
+
+        /** {@code delay} is a fraction of the duration before this star appears. */
+        void add(float x, float y, int color, float size, float delay) {
+            stars.add(new float[]{x, y, color, size, delay});
+        }
+
+        @Override
+        void draw(Canvas c, float t) {
+            for (float[] s : stars) {
+                float lt = (t - s[4]) / (1 - s[4]);
+                if (lt < 0) continue;
+                float grow = lt < 0.25f ? lt / 0.25f : 1;
+                float r = s[3] * grow * (1 - 0.6f * lt) * (0.7f + 0.3f * (float) Math.sin(lt * 22 + s[4] * 40));
+                float x = s[0], y = s[1] - cell * 0.5f * easeOut(lt);
+                int alpha = (int) (255 * (1 - lt * lt));
+                paint.setColor((int) s[2]);
+                paint.setAlpha(alpha / 4); // soft glow behind the star
+                c.drawCircle(x, y, r * 0.75f, paint);
+                paint.setAlpha(alpha);
+                path.rewind();
+                path.moveTo(x, y - r);
+                path.quadTo(x, y, x + r, y);
+                path.quadTo(x, y, x, y + r);
+                path.quadTo(x, y, x - r, y);
+                path.quadTo(x, y, x, y - r);
+                path.close();
+                c.drawPath(path, paint);
+            }
             paint.setAlpha(255);
         }
     }

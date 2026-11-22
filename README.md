@@ -64,6 +64,7 @@ The game explains each special piece once, the first time it shows up in the tra
 
 - **Player level and XP:** every finished game gives XP (based on score, plus bonuses for winning and for the daily puzzle).
 - **Themes:** Space (start), Ocean (level 3), Candy (level 5, light) and Minimal (level 8, light). Change them in Settings → Theme.
+- **Seasonal theme, Winter Lights (Dec 1 to Jan 6):** red, green and gold pieces with falling snow and sparkles. Finish a daily puzzle during the season to unlock it, and it stays yours afterwards. A menu banner announces it while the season runs.
 - **Awards:** 14 achievements, such as First circle, Double, Triple, On a roll, Clean slate, Kaboom, 500 club, Week streak and Perfectionist. Each one gives 1 hint. If you're signed in to Google Play Games, each award also unlocks the Play Games achievement with the same name. Awards earned earlier or while signed out are sent the next time the game starts. The Awards dialog has a Play Games button that opens the achievements screen.
 - **Daily streak:** play the daily puzzle on consecutive days to grow it.
 - **Leaderboards (Google Play Games):** Classic high score, Daily puzzle and Blitz 60s. Scores are sent automatically when a game ends if you're signed in. Open them from the Leaderboards button on the main menu.

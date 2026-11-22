@@ -2,7 +2,10 @@ package com.game.cosmicbubbles;
 
 import android.graphics.Color;
 
-/** Colour sets. Each theme unlocks at a player level (later also purchasable). */
+/**
+ * Colour sets. Standard themes unlock at a player level. Seasonal themes ({@link #season} set) can
+ * only be unlocked while their season runs, and are kept afterwards. Premium unlocks everything.
+ */
 public final class Theme {
     public final String id;
     public final String name;
@@ -11,10 +14,24 @@ public final class Theme {
     public final int bgTop, bgBottom, panel, cell, cellAlt, text, textDim, accent;
     /** Up to 4 segment colours. */
     public final int[] pieces;
+    /** Non-null for a limited-time theme. */
+    public final Season season;
+    /** Decoration: falling snow on the background, extra sparkle when a circle pops. */
+    public final boolean snow, sparkle;
 
     private Theme(String id, String name, int unlockLevel, boolean light, String bgTop, String bgBottom,
                   String panel, String cell, String cellAlt, String text, String textDim, String accent,
                   String... pieces) {
+        this(id, name, unlockLevel, null, false, false, light, bgTop, bgBottom, panel, cell, cellAlt, text,
+                textDim, accent, pieces);
+    }
+
+    private Theme(String id, String name, int unlockLevel, Season season, boolean snow, boolean sparkle,
+                  boolean light, String bgTop, String bgBottom, String panel, String cell, String cellAlt,
+                  String text, String textDim, String accent, String[] pieces) {
+        this.season = season;
+        this.snow = snow;
+        this.sparkle = sparkle;
         this.id = id;
         this.name = name;
         this.unlockLevel = unlockLevel;
@@ -40,6 +57,11 @@ public final class Theme {
                     "#4A2545", "#9B6F93", "#FF4F9A", "#FF6FA8", "#3FA9F5", "#5CC93B", "#FF9F1C"),
             new Theme("minimal", "Minimal", 8, true, "#F4F4F2", "#E9E9E6", "#FFFFFF", "#F7F7F5", "#F1F1EE",
                     "#1E1E1E", "#7A7A7A", "#2F6FED", "#2F6FED", "#E5484D", "#30A46C", "#F5A524"),
+            // Red, green, gold and icy blue on a snowy night sky.
+            new Theme("winter_lights", "Winter Lights", 0, Season.WINTER_LIGHTS, true, true, false,
+                    "#081530", "#17345A", "#0F2142", "#132A4D", "#163056",
+                    "#FFF8EC", "#A3B6D1", "#FFD36B",
+                    new String[]{"#FF4D5E", "#38C97A", "#FFC94A", "#7AD3FF"}),
     };
 
     public static Theme byId(String id) {

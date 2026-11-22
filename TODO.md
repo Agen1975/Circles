@@ -39,23 +39,19 @@ The code is in commit 541d3db, and all 14 achievement IDs are in `games-ids.xml`
 - Review and publish the Play Games Services configuration so the achievements go live. Until then, only testers can unlock them.
 - Test on the internal track: earn an award, then open Awards → Play Games.
 
-## After achievements: "Winter Lights" seasonal theme (idea agreed 2026-11-21)
+## "Winter Lights" seasonal theme (implemented 2026-11-22, versionCode 8)
 
-**Goal:** a limited-time theme that gives lapsed players a reason to return, plus a Play Console Promotional content (LiveOps) event card for free visibility.
+**What's in the app now:**
+- **Season:** Dec 1 to Jan 6 inclusive, built into the app (`Season.java`). No server or network call.
+- **Unlocking:** finish any daily puzzle during the season. The theme is then kept for good. Premium players get it too, so the Shop's "all themes" promise still holds.
+- **Decoration:** red, green, gold and icy-blue palette (`Theme.java`), falling snow on the game and menu backgrounds (`Snow.java`), and gold sparkles when a circle pops.
+- **Announcing it:** a menu banner while the season runs ("Finish a daily puzzle to unlock the festive theme · by Jan 6", or "tap to switch" once it's unlocked). The 6 pm reminder mentions it for players who haven't unlocked it.
+- **Theme picker:** a locked seasonal theme is listed only during its season.
+- **Analytics:** an `unlock_theme` event with the theme id.
+- **Testing:** `./gradlew installDebug -PseasonDate=20261210` pretends today is that date. Debug builds only; release builds always use the real date.
 
-**Plan:**
-- **Season:** about Dec 1 to Jan 6. The dates are built into the app, with no server or network call.
-- **Unlocking:** the theme can be unlocked only during the season (for example, by finishing one daily puzzle), and the player keeps it afterwards. It's never taken away.
-- **Decoration, not just colours:** add a red, green and gold palette in `Theme.java`, plus falling snowflakes on the background and a seasonal sparkle when a circle pops.
-- **Announcing it:** show a menu banner while it's available ("Winter Lights: unlock by Jan 6"), and optionally mention it in the 6 pm reminder.
-- **Premium:** Premium promises "all themes unlocked". Either include seasonal themes for Premium players or change the Shop text to "all standard themes".
-- **Store:** set up a Play Console Promotional content event and refresh one store screenshot during the season.
-- **Later seasons:** use the same mechanism for Spring Bloom (around Easter, calculated per year), Summer and Autumn Harvest (Thanksgiving). Season names work everywhere; the US store text can say "holiday".
-- **Timing:** the update has to be live before Dec 1, so leave time for review and rollout.
-
-## Other open items
-
-- Push `feature/engagement` from Android Studio. This shell has no GitHub credentials. Don't merge into master yet.
-- Build a fresh signed release bundle before uploading to Play. The existing `app/release/app-release.aab` is stale. Use versionCode 7 (bumped 2026-11-20: 5 added the AD_ID permission, 6 marks the portrait screen as optional, 7 fixes status-bar icons on light themes).
-- Play Console → App content → **Data safety**: declare what Firebase collects (added 2026-11-20). That's crash logs, diagnostics, app interactions and device or other IDs, collected by Crashlytics and Analytics, processed by Google and not shared. Also update the privacy policy.
-- AdMob → Privacy & messaging: make sure the EU consent message includes Google Analytics for Firebase as a vendor or purpose, so Analytics consent comes from the same form.
+**Remaining:**
+- Build a signed release bundle (versionCode 8) and upload it soon. It has to be live before Dec 1, so leave time for review and rollout.
+- Play Console → Promotional content: create the Winter Lights event card (Dec 1 to Jan 6).
+- Refresh one store screenshot with the Winter Lights theme for the season.
+- **Later seasons:** add a `Season` and a theme for Spring Bloom (around Easter, which needs a per-year date calculation), Summer and Autumn Harvest (Thanksgiving).

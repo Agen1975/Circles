@@ -12,7 +12,7 @@ android {
         applicationId = "com.game.cosmicbubbles"
         minSdk = 24
         targetSdk = 36
-        versionCode = 7
+        versionCode = 8
         versionName = "2.0.0"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-8769003368118760~7668859499"
     }
@@ -23,6 +23,8 @@ android {
 
     buildTypes {
         debug {
+            // Pretend today is another date to test seasons: -PseasonDate=20261210
+            buildConfigField("int", "SEASON_DATE", (project.findProperty("seasonDate") ?: "0").toString())
             // Google's public test ad units: safe to click, never earn money.
             // Build with -PnoAds to switch ads off for testing.
             val ads = !project.hasProperty("noAds")
@@ -32,6 +34,7 @@ android {
                 if (ads) "\"ca-app-pub-3940256099942544/5224354917\"" else "\"\"")
         }
         release {
+            buildConfigField("int", "SEASON_DATE", "0")
             // Live AdMob ad units ("Between games" and "Undo or hint").
             buildConfigField("String", "AD_INTERSTITIAL", "\"ca-app-pub-8769003368118760/5017424233\"")
             buildConfigField("String", "AD_REWARDED", "\"ca-app-pub-8769003368118760/4070514934\"")

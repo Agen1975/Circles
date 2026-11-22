@@ -79,7 +79,7 @@ public class JourneyActivity extends Activity {
         col.addView(Ui.button(this, t, "Back", null, false, v -> finish()));
 
         ScrollView scroll = new ScrollView(this);
-        scroll.setBackground(Ui.background(t));
+        scroll.setBackground(Ui.background(this, t));
         scroll.addView(col);
         Ui.padForInsets(scroll);
         setContentView(scroll);

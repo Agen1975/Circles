@@ -116,8 +116,17 @@ public final class Reminders {
         int streak = p.dailyStreak();
         boolean dailyDone = p.dailyBest(Progress.today()) >= 0;
         if (streak > 0 && !dailyDone) return "Keep your " + streak + "-day streak going! Today's puzzle is waiting.";
+        Season season = Season.current();
+        if (season != null && unanswered == 0 && !seasonalUnlocked(p, season)) {
+            return season.name + " is here! Finish a daily puzzle by " + season.endLabel + " to unlock the festive theme.";
+        }
         if (unanswered == 0) return "Today's daily puzzle is ready. Can you beat it?";
         return "Your circles miss you. Fancy a quick game?";
+    }
+
+    private static boolean seasonalUnlocked(Progress p, Season s) {
+        for (Theme t : Theme.ALL) if (t.season == s && !p.isThemeUnlocked(t)) return false;
+        return true;
     }
 
     static void show(Context c) {

@@ -22,8 +22,8 @@ final class Ui {
         return Math.round(v * c.getResources().getDisplayMetrics().density);
     }
 
-    static GradientDrawable background(Theme t) {
-        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{t.bgTop, t.bgBottom});
+    static android.graphics.drawable.Drawable background(Context c, Theme t) {
+        return Snow.background(t, c.getResources().getDisplayMetrics().density);
     }
 
     static TextView text(Context c, Theme t, String s, float sp, boolean bold, boolean dim) {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -84,6 +85,9 @@ public class MainActivity extends Activity {
         stats.setPadding(0, Ui.dp(this, 6), 0, Ui.dp(this, 8));
         col.addView(stats);
 
+        View banner = seasonBanner(t);
+        if (banner != null) col.addView(banner);
+
         // Continue
         String saved = progress.savedGame("classic");
         GameState s = saved == null ? null : GameState.decode(saved, GameConfig.SIZE);
@@ -132,12 +136,30 @@ public class MainActivity extends Activity {
         col.addView(row);
 
         ScrollView scroll = new ScrollView(this);
-        scroll.setBackground(Ui.background(t));
+        scroll.setBackground(Ui.background(this, t));
         scroll.addView(col);
         Ui.padForInsets(scroll);
         setContentView(scroll);
         getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
         Ui.systemBars(this, t);
+    }
+
+    /** While a season runs: how to unlock its theme, or a shortcut to switch to it. */
+    private View seasonBanner(Theme current) {
+        Season s = Season.current();
+        if (s == null) return null;
+        for (Theme st : Theme.ALL) {
+            if (st.season != s || st == current) continue;
+            if (!progress.isThemeUnlocked(st)) {
+                return Ui.button(this, current, "❄  " + s.name + "  ❄", "Finish a daily puzzle to unlock the festive theme · by "
+                        + s.endLabel, false, v -> play(GameConfig.daily(Progress.today()), true));
+            }
+            return Ui.button(this, current, "❄  " + s.name + "  ❄", "Your festive theme is ready · tap to switch", false, v -> {
+                progress.setTheme(st);
+                build();
+            });
+        }
+        return null;
     }
 
     private void play(GameConfig cfg, boolean resume) {
@@ -211,12 +233,16 @@ public class MainActivity extends Activity {
     }
 
     private void showThemes() {
-        Theme[] all = Theme.ALL;
+        // Locked seasonal themes are listed only while their season runs.
+        java.util.List<Theme> list = new java.util.ArrayList<>();
+        for (Theme th : Theme.ALL) {
+            if (th.season == null || th.season.active() || progress.isThemeUnlocked(th)) list.add(th);
+        }
+        Theme[] all = list.toArray(new Theme[0]);
         String[] names = new String[all.length];
         int current = 0;
         for (int i = 0; i < all.length; i++) {
-            boolean open = progress.isThemeUnlocked(all[i]);
-            names[i] = all[i].name + (open ? "" : "  (unlocks at level " + all[i].unlockLevel + ")");
+            names[i] = all[i].name + (progress.isThemeUnlocked(all[i]) ? "" : "  (" + lockedHint(all[i]) + ")");
             if (all[i].id.equals(progress.theme().id)) current = i;
         }
         new AlertDialog.Builder(this, android.R.style.Theme_DeviceDefault_Dialog_Alert)
@@ -227,10 +253,16 @@ public class MainActivity extends Activity {
                         d.dismiss();
                         build();
                     } else {
-                        android.widget.Toast.makeText(this, "Reach level " + all[which].unlockLevel
-                                + " to unlock " + all[which].name, android.widget.Toast.LENGTH_SHORT).show();
+                        String how = all[which].season != null ? "Finish a daily puzzle by " + all[which].season.endLabel
+                                : "Reach level " + all[which].unlockLevel;
+                        android.widget.Toast.makeText(this, how + " to unlock " + all[which].name,
+                                android.widget.Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
+    }
+
+    private static String lockedHint(Theme t) {
+        return t.season != null ? "daily puzzle by " + t.season.endLabel : "unlocks at level " + t.unlockLevel;
     }
 }

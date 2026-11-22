@@ -39,19 +39,25 @@ The code is in commit 541d3db, and all 14 achievement IDs are in `games-ids.xml`
 - Review and publish the Play Games Services configuration so the achievements go live. Until then, only testers can unlock them.
 - Test on the internal track: earn an award, then open Awards → Play Games.
 
-## "Winter Lights" seasonal theme (implemented 2026-11-22, versionCode 8)
+## ✅ DONE: "Winter Lights" seasonal theme (released 2026-11-22, versionCode 8)
 
-**What's in the app now:**
+Released to production and both Play Console promotional events are created.
+
+**What's in the app:**
 - **Season:** Dec 1 to Jan 6 inclusive, built into the app (`Season.java`). No server or network call.
 - **Unlocking:** finish any daily puzzle during the season. The theme is then kept for good. Premium players get it too, so the Shop's "all themes" promise still holds.
-- **Decoration:** red, green, gold and icy-blue palette (`Theme.java`), falling snow on the game and menu backgrounds (`Snow.java`), and gold sparkles when a circle pops.
-- **Announcing it:** a menu banner while the season runs ("Finish a daily puzzle to unlock the festive theme · by Jan 6", or "tap to switch" once it's unlocked). The 6 pm reminder mentions it for players who haven't unlocked it.
-- **Theme picker:** a locked seasonal theme is listed only during its season.
-- **Analytics:** an `unlock_theme` event with the theme id.
-- **Testing:** `./gradlew installDebug -PseasonDate=20261210` pretends today is that date. Debug builds only; release builds always use the real date.
+- **Decoration:** red, green, gold and icy-blue palette (`Theme.java`), falling snow on the game and menu backgrounds (`Snow.java`), and a multicolour star sparkle when a circle pops.
+- **Announcing it:** a menu banner while the season runs, the 6 pm reminder for players who haven't unlocked it, an `unlock_theme` analytics event.
+- **Testing:** `./gradlew installDebug -PseasonDate=20261210` pretends today is that date. Debug builds only.
+- **Store assets:** `promo_winter_lights_card.png` (event card, 1920x1080, no text) and `store_screenshots/phone/7_winter_lights.png`.
+- **Promo events** (local time, 4-week cap): Dec 1 to 28 (shown from Nov 28), and Dec 29 to Jan 6.
 
-**Remaining:**
-- Build a signed release bundle (versionCode 8) and upload it soon. It has to be live before Dec 1, so leave time for review and rollout.
-- Play Console → Promotional content: create the Winter Lights event card (Dec 1 to Jan 6).
-- Refresh one store screenshot with the Winter Lights theme for the season.
+**After the season (Jan 7):** move the Winter Lights screenshot out of the top listing slots.
+
 - **Later seasons:** add a `Season` and a theme for Spring Bloom (around Easter, which needs a per-year date calculation), Summer and Autumn Harvest (Thanksgiving).
+
+## Open bugs: overlapping on-screen messages (found 2026-11-22)
+
+- "STREAK x2" and "No new pieces!" are drawn at nearly the same height above the NEXT row, so they overlap when one move does both.
+- When one move unlocks two achievements, both callouts are drawn at the same spot and the text is garbled.
+- Fix idea: stack messages that are on screen at the same time instead of drawing them in one place.

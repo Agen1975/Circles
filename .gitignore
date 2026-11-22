@@ -24,3 +24,6 @@ keystore.properties
 # Firebase Hosting deploy cache and logs
 site/.firebase/
 firebase-debug.log
+
+# Large media kept out of git
+*.mp4

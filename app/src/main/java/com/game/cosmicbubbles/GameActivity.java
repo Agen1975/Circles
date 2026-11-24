@@ -27,8 +27,14 @@ public class GameActivity extends Activity implements GameView.Host {
                 .putExtra(EXTRA_RESUME, resume);
     }
 
+    /** The game the intent describes, or null if it names no valid mode (e.g. launched by a test crawler). */
     static GameConfig configFrom(Intent i) {
-        GameConfig.Mode mode = GameConfig.Mode.valueOf(i.getStringExtra(EXTRA_MODE));
+        GameConfig.Mode mode;
+        try {
+            mode = GameConfig.Mode.valueOf(i.getStringExtra(EXTRA_MODE));
+        } catch (RuntimeException e) {
+            return null;
+        }
         int number = i.getIntExtra(EXTRA_NUMBER, 0);
         long seed = i.getLongExtra(EXTRA_SEED, System.nanoTime());
         switch (mode) {
@@ -47,7 +53,13 @@ public class GameActivity extends Activity implements GameView.Host {
         Intent i = getIntent();
         // After a process restart, resume what was saved in onPause instead of starting over.
         boolean resume = i.getBooleanExtra(EXTRA_RESUME, false) || savedInstanceState != null;
-        view = new GameView(this, this, configFrom(i), resume);
+        GameConfig cfg = configFrom(i);
+        if (cfg == null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
+        view = new GameView(this, this, cfg, resume);
         setContentView(view);
         Ui.systemBars(this, Progress.get(this).theme());
     }
@@ -55,6 +67,7 @@ public class GameActivity extends Activity implements GameView.Host {
     @Override
     protected void onPause() {
         super.onPause();
+        if (view == null) return;
         view.save();
         view.setPaused(true);
     }
@@ -62,6 +75,7 @@ public class GameActivity extends Activity implements GameView.Host {
     @Override
     protected void onResume() {
         super.onResume();
+        if (view == null) return;
         view.setPaused(false);
         Reminders.onAppOpened(this);
     }
@@ -69,7 +83,7 @@ public class GameActivity extends Activity implements GameView.Host {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        view.release();
+        if (view != null) view.release();
     }
 
     @Override

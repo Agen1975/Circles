@@ -42,8 +42,7 @@ public class MainActivity extends Activity {
         Games.syncAchievements(this);
         // Not during the first-launch tutorial: the consent form must appear over a visible screen.
         if (progress.tutorialDone()) {
-            Ads.start(this);
-            Reminders.maybeAskPermission(this);
+            Ads.start(this, () -> Reminders.maybeAskPermission(this));
         }
         Reminders.onAppOpened(this);
     }

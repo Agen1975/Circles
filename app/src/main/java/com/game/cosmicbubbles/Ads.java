@@ -44,22 +44,34 @@ public final class Ads {
         return !BuildConfig.AD_INTERSTITIAL.isEmpty() || !BuildConfig.AD_REWARDED.isEmpty();
     }
 
-    /** Call from the first activity. Shows the consent form where the law requires it. */
-    public static void start(Activity a) {
-        if (!configured() || !requested.compareAndSet(false, true)) return;
+    /**
+     * Call from the first activity. Shows the consent form where the law requires it, then runs {@code then}
+     * (on the main thread), so other prompts never appear on top of the consent form.
+     */
+    public static void start(Activity a, Runnable then) {
+        if (!configured() || !requested.compareAndSet(false, true)) {
+            then.run();
+            return;
+        }
         // Wait until the menu has drawn: starting the SDK's WebViews during the first frames can
         // stall the app's rendering (seen as a black screen on the emulator).
         a.getWindow().getDecorView().postDelayed(() -> {
-            if (!a.isFinishing() && !a.isDestroyed() && a.hasWindowFocus()) startNow(a);
+            if (!a.isFinishing() && !a.isDestroyed() && a.hasWindowFocus()) startNow(a, then);
             else requested.set(false); // try again next time the menu is shown
         }, 2500);
     }
 
-    private static void startNow(Activity a) {
+    private static void startNow(Activity a, Runnable then) {
         ConsentInformation info = UserMessagingPlatform.getConsentInformation(a);
         info.requestConsentInfoUpdate(a, new ConsentRequestParameters.Builder().build(),
-                () -> UserMessagingPlatform.loadAndShowConsentFormIfRequired(a, err -> initIfAllowed(a)),
-                err -> initIfAllowed(a));
+                () -> UserMessagingPlatform.loadAndShowConsentFormIfRequired(a, err -> {
+                    initIfAllowed(a);
+                    then.run();
+                }),
+                err -> {
+                    initIfAllowed(a);
+                    then.run();
+                });
         initIfAllowed(a); // consent from a previous session
     }
 

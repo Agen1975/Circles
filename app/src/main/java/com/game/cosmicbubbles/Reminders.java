@@ -2,6 +2,7 @@ package com.game.cosmicbubbles;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -87,19 +88,31 @@ public final class Reminders {
     }
 
     /**
-     * Asks for the notification permission once, on a menu visit after the player has finished a game
-     * since first reaching the menu (so never over the tutorial or the first-launch consent form).
+     * Asks whether the player wants reminders with our own dialog first; only "Yes" opens the system permission
+     * dialog, which Android lets an app show just a couple of times. Asked on a menu visit after the first finished
+     * real game, and, after "Not now", once more after the player finishes a daily puzzle.
      */
     public static void maybeAskPermission(Activity a) {
+        if (a.isFinishing() || a.isDestroyed() || hasPermission(a)) return;
+        Progress progress = Progress.get(a);
         SharedPreferences p = prefs(a);
-        int games = Progress.get(a).gamesPlayed();
-        if (!p.contains("games_at_first_menu")) {
-            p.edit().putInt("games_at_first_menu", games).apply();
-            return;
-        }
-        if (p.getBoolean("asked", false) || games <= p.getInt("games_at_first_menu", 0)) return;
-        p.edit().putBoolean("asked", true).apply();
-        if (Progress.get(a).reminders()) requestPermission(a);
+        int asks = p.getInt("soft_asks", 0);
+        // "asked": the system dialog was already shown (also set by versions before the soft prompt).
+        if (!progress.reminders() || p.getBoolean("asked", false) || asks >= 2) return;
+        if (progress.gamesPlayed() < 1) return;
+        if (asks == 1 && progress.dailyBest(Progress.today()) < 0) return;
+        p.edit().putInt("soft_asks", asks + 1).apply();
+        new AlertDialog.Builder(a, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setTitle(asks == 0 ? "Daily reminders?" : "Keep your streak?")
+                .setMessage(asks == 0
+                        ? "Get a reminder at 6 pm when a new daily puzzle is ready. Only on days you haven't played."
+                        : "A reminder at 6 pm on days you haven't played helps you keep your daily streak going.")
+                .setPositiveButton("Yes, remind me", (d, w) -> {
+                    p.edit().putBoolean("asked", true).apply();
+                    requestPermission(a);
+                })
+                .setNegativeButton("Not now", null)
+                .show();
     }
 
     // ---- the notification

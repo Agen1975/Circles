@@ -1483,7 +1483,8 @@ public class GameView extends View {
         GameState st = engine.state();
         if (!accountedGame) {
             accountedGame = true;
-            progress.addGame();
+            // Tutorial steps don't count: the ad-free first games and the reminder prompt count real games only.
+            if (cfg.mode != GameConfig.Mode.TUTORIAL) progress.addGame();
         }
         progress.addCircles(Math.max(0, st.circlesTotal - accountedCircles));
         accountedCircles = Math.max(accountedCircles, st.circlesTotal);

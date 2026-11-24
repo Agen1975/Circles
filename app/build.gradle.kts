@@ -12,8 +12,8 @@ android {
         applicationId = "com.game.cosmicbubbles"
         minSdk = 24
         targetSdk = 36
-        versionCode = 8
-        versionName = "2.0.0"
+        versionCode = 9
+        versionName = "2.1.0"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-8769003368118760~7668859499"
     }
 

@@ -61,7 +61,25 @@ public class GameActivity extends Activity implements GameView.Host {
         }
         view = new GameView(this, this, cfg, resume);
         setContentView(view);
+        if (savedInstanceState == null && !resume) logGameStart(cfg);
         Ui.systemBars(this, Progress.get(this).theme());
+    }
+
+    /** game_start for every new game; tutorial_begin when the first tutorial step opens. */
+    private void logGameStart(GameConfig cfg) {
+        FirebaseAnalytics fa = FirebaseAnalytics.getInstance(this);
+        fa.logEvent("game_start", gameParams(cfg));
+        if (cfg.mode == GameConfig.Mode.TUTORIAL && cfg.number == 1) {
+            fa.logEvent(FirebaseAnalytics.Event.TUTORIAL_BEGIN, null);
+        }
+    }
+
+    /** mode, plus level for Journey levels and tutorial steps. */
+    private static Bundle gameParams(GameConfig cfg) {
+        Bundle b = new Bundle();
+        b.putString("mode", cfg.mode.name().toLowerCase());
+        if (cfg.mode == GameConfig.Mode.JOURNEY || cfg.mode == GameConfig.Mode.TUTORIAL) b.putLong("level", cfg.number);
+        return b;
     }
 
     @Override
@@ -137,11 +155,13 @@ public class GameActivity extends Activity implements GameView.Host {
     @Override
     public void gameEnded(GameConfig cfg, int score, boolean won) {
         Games.submit(this, cfg.mode, score);
-        Bundle b = new Bundle();
-        b.putString("mode", cfg.mode.name().toLowerCase());
-        if (cfg.mode == GameConfig.Mode.JOURNEY || cfg.mode == GameConfig.Mode.TUTORIAL) b.putLong("level", cfg.number);
+        Bundle b = gameParams(cfg);
         b.putLong("score", score);
         b.putLong("success", won ? 1 : 0);
-        FirebaseAnalytics.getInstance(this).logEvent("game_end", b);
+        FirebaseAnalytics fa = FirebaseAnalytics.getInstance(this);
+        fa.logEvent("game_end", b);
+        if (cfg.mode == GameConfig.Mode.TUTORIAL && cfg.number >= Levels.TUTORIAL_STEPS) {
+            fa.logEvent(FirebaseAnalytics.Event.TUTORIAL_COMPLETE, null);
+        }
     }
 }

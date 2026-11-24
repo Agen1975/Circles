@@ -50,6 +50,11 @@ public final class Feedback {
         if (haptics) view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
     }
 
+    /** Finger lands on a piece: firmer than {@link #tick()} so a grab is felt before the drag starts. */
+    public void grab() {
+        if (haptics) view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+    }
+
     /** A circle completed. */
     public void confirm() {
         if (!haptics) return;

@@ -160,8 +160,14 @@ public class GameActivity extends Activity implements GameView.Host {
         b.putLong("success", won ? 1 : 0);
         FirebaseAnalytics fa = FirebaseAnalytics.getInstance(this);
         fa.logEvent("game_end", b);
-        if (cfg.mode == GameConfig.Mode.TUTORIAL && cfg.number >= Levels.TUTORIAL_STEPS) {
-            fa.logEvent(FirebaseAnalytics.Event.TUTORIAL_COMPLETE, null);
-        }
+    }
+
+    /** tutorial_complete when the first-launch tutorial is finished; tutorial_skip (with the step) when skipped. */
+    @Override
+    public void tutorialFinished(int step, boolean skipped) {
+        Bundle b = new Bundle();
+        b.putLong("level", step);
+        FirebaseAnalytics.getInstance(this)
+                .logEvent(skipped ? "tutorial_skip" : FirebaseAnalytics.Event.TUTORIAL_COMPLETE, b);
     }
 }

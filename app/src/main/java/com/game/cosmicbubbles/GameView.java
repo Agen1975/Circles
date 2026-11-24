@@ -72,6 +72,9 @@ public class GameView extends View {
 
         /** A game just ended: report the score to leaderboards and analytics. */
         void gameEnded(GameConfig cfg, int score, boolean won);
+
+        /** The first-launch tutorial ended at {@code step}, finished or skipped: report it to analytics. */
+        void tutorialFinished(int step, boolean skipped);
     }
 
     private static final int NONE = -2;
@@ -136,6 +139,11 @@ public class GameView extends View {
     private final List<Anim> anims = new ArrayList<>();
     private final Set<Integer> hiddenCells = new HashSet<>();
     private boolean hideHold;
+    /** True during the forced first-launch tutorial, which has only {@link Levels#FIRST_RUN_STEPS} steps. */
+    private final boolean firstRun;
+    private final RectF skipBtn = new RectF();
+    /** Show the rotation tip once, in the player's first real game. */
+    private boolean rotateTip;
     private float displayedScore;
     private long trayRevealAt;
     private float shakeX, shakeY;
@@ -160,6 +168,8 @@ public class GameView extends View {
         this.host = host;
         this.cfg = cfg;
         progress = Progress.get(context);
+        firstRun = cfg.mode == GameConfig.Mode.TUTORIAL && !progress.tutorialDone();
+        rotateTip = cfg.mode != GameConfig.Mode.TUTORIAL && cfg.startRotateTokens > 0 && !progress.tipShown("rotate");
         theme = progress.theme();
         snow = theme.snow ? new Snow(getResources().getDisplayMetrics().density) : null;
         colorblind = progress.colorblind();
@@ -234,6 +244,7 @@ public class GameView extends View {
             insetBottom = in.getSystemWindowInsetBottom();
         }
         layoutGame(getWidth(), getHeight());
+        excludeEdgeGestures();
         invalidate();
         return in;
     }
@@ -241,6 +252,13 @@ public class GameView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         layoutGame(w, h);
+        excludeEdgeGestures();
+        if (rotateTip && w > 0 && h > 0) {
+            rotateTip = false;
+            progress.setTipShown("rotate");
+            add(new FloatText("Tip: double-tap a piece to rotate it", boardRect.centerX(), boardRect.bottom + 2 * dp,
+                    theme.accent, 14 * dp, SystemClock.uptimeMillis(), 5000));
+        }
         bgShader = new LinearGradient(0, 0, 0, h, theme.bgTop, theme.bgBottom, Shader.TileMode.CLAMP);
         // Wildcard pieces: a full red-to-violet spectrum inside every 90-degree quarter, so a rainbow
         // segment never looks like a normal piece with a tint of a neighbouring colour.
@@ -275,6 +293,7 @@ public class GameView extends View {
         scoreX = w / 2f;
         scoreY = top + 34 * dp;
         infoRect.set(m, top + topBarH, w - m, top + topBarH + infoH);
+        skipBtn.set(infoRect.right - 88 * dp, infoRect.top - 4 * dp, infoRect.right + 8 * dp, infoRect.top + 36 * dp);
 
         float toolTop = bottom - toolH;
         float bw = (w - 2 * m - 2 * 10 * dp) / 3f;
@@ -317,6 +336,19 @@ public class GameView extends View {
         int r = (int) ((y - boardTop) / cell);
         if (c < 0 || r < 0 || c >= S || r >= S) return NONE;
         return r * S + c;
+    }
+
+    /**
+     * Cell under a finger that is starting a press. A touch up to 40% of a cell outside the board (or in the
+     * gap at its edge) counts as the nearest edge cell, so pieces in the outer rows and columns are easy to grab.
+     */
+    private int pressCellAt(float x, float y) {
+        float slack = cell * 0.4f;
+        if (x < boardRect.left - slack || x > boardRect.right + slack
+                || y < boardRect.top - slack || y > boardRect.bottom + slack) return NONE;
+        float cx = Math.max(boardRect.left + 1, Math.min(boardRect.right - 1, x));
+        float cy = Math.max(boardRect.top + 1, Math.min(boardRect.bottom - 1, y));
+        return cellAt(cx, cy);
     }
 
     private Piece pieceAt(int src) {
@@ -509,6 +541,18 @@ public class GameView extends View {
         for (int i = 0; i < cells.length; i++) {
             Piece p = cells[i];
             if (p == null || hiddenCells.contains(i)) continue;
+            if (!dragging && pressSource == i) {
+                // Pressed but not yet moved: lift it a little and ring it so the grab is visible.
+                tmp.set(cellX(i) - cell / 2 + 2 * dp, cellY(i) - cell / 2 + 2 * dp,
+                        cellX(i) + cell / 2 - 2 * dp, cellY(i) + cell / 2 - 2 * dp);
+                paint.setColor(theme.accent);
+                paint.setAlpha(80);
+                c.drawRoundRect(tmp, 12 * dp, 12 * dp, paint);
+                paint.setAlpha(255);
+                strokeRect(c, tmp, theme.accent, 3 * dp, 255);
+                drawPiece(c, p, cellX(i), cellY(i), cell * 1.2f, 255);
+                continue;
+            }
             int alpha = (dragging && pressSource == i) ? 60 : 255;
             drawPiece(c, p, cellX(i), cellY(i), cell, alpha);
         }
@@ -543,8 +587,11 @@ public class GameView extends View {
                 hot ? 255 : (st.hold == null ? 120 : 70));
         if (selected == GameEngine.HOLD && !dragging) strokeRect(c, holdRect, theme.accent, 3 * dp, 255);
         if (st.hold != null && !hideHold) {
+            boolean pressed = !dragging && pressSource == GameEngine.HOLD;
+            if (pressed) strokeRect(c, holdRect, theme.accent, 3 * dp, 255);
             int alpha = (dragging && pressSource == GameEngine.HOLD) ? 60 : 255;
-            drawPiece(c, st.hold, holdRect.centerX(), holdRect.centerY(), holdRect.width() * 0.78f, alpha);
+            drawPiece(c, st.hold, holdRect.centerX(), holdRect.centerY(),
+                    holdRect.width() * (pressed ? 0.9f : 0.78f), alpha);
         }
         text.setColor(theme.textDim);
         text.setTextSize(11 * dp);
@@ -644,7 +691,8 @@ public class GameView extends View {
                 break;
             }
             case TUTORIAL: {
-                left = "How to play · " + cfg.number + "/" + Levels.TUTORIAL_STEPS;
+                left = "How to play · " + cfg.number + "/" + tutorialSteps();
+                right = "Skip";
                 text.setTypeface(Typeface.DEFAULT);
                 text.setTextSize(15 * dp);
                 text.setColor(theme.text);
@@ -913,15 +961,18 @@ public class GameView extends View {
                 downY = y;
                 pressSource = NONE;
                 if (results != null || paused || engine.state().over) return true;
-                int cellIdx = cellAt(x, y);
+                int cellIdx = pressCellAt(x, y);
                 if (cellIdx >= 0 && engine.state().cells[cellIdx] != null) pressSource = cellIdx;
                 else if (holdRect.contains(x, y) && engine.state().hold != null) pressSource = GameEngine.HOLD;
+                if (pressSource != NONE) {
+                    fb.grab();
+                    invalidate();
+                }
                 return true;
             case MotionEvent.ACTION_MOVE:
                 if (pressSource != NONE && !dragging && Math.hypot(x - downX, y - downY) > touchSlop) {
                     dragging = true;
                     selected = NONE;
-                    fb.tick();
                     fb.play(Feedback.Sfx.PICK);
                 }
                 if (dragging) {
@@ -1020,6 +1071,7 @@ public class GameView extends View {
             return;
         }
         if (menuBtn.contains(x, y)) { openPause(); return; }
+        if (cfg.mode == GameConfig.Mode.TUTORIAL && skipBtn.contains(x, y)) { skipTutorial(); return; }
         if (undoBtn.contains(x, y)) { doUndo(); return; }
         if (hintBtn.contains(x, y)) { doHint(); return; }
         if (rotateBtn.contains(x, y)) {
@@ -1281,6 +1333,38 @@ public class GameView extends View {
         }
     }
 
+    /**
+     * Stops the system back gesture from stealing drags that start on pieces in the outer columns. Android
+     * honours at most 200dp per screen edge, so this covers the lower part of the board, where most pieces sit.
+     */
+    private void excludeEdgeGestures() {
+        if (Build.VERSION.SDK_INT < 29 || boardRect.isEmpty()) return;
+        int edge = (int) (boardRect.left + cell);
+        int bottom = (int) boardRect.bottom;
+        int top = (int) Math.max(boardRect.top, bottom - 200 * dp);
+        java.util.List<android.graphics.Rect> rects = new ArrayList<>();
+        rects.add(new android.graphics.Rect(0, top, edge, bottom));
+        rects.add(new android.graphics.Rect(getWidth() - edge, top, getWidth(), bottom));
+        setSystemGestureExclusionRects(rects);
+    }
+
+    private int tutorialSteps() {
+        return firstRun ? Levels.FIRST_RUN_STEPS : Levels.TUTORIAL_STEPS;
+    }
+
+    /** First launch: straight into a Classic game. From the menu's "How to play": back to the menu. */
+    private void skipTutorial() {
+        if (!firstRun) {
+            host.openMenu();
+            return;
+        }
+        if (!progress.tutorialDone()) {
+            progress.setTutorialDone();
+            host.tutorialFinished(cfg.number, true);
+        }
+        host.startGame(GameConfig.classic(System.nanoTime()), false);
+    }
+
     private void showMessage(String s, int color) {
         add(new FloatText(s, boardRect.centerX(), boardRect.bottom + 2 * dp, color, 13 * dp,
                 SystemClock.uptimeMillis(), 1800));
@@ -1439,7 +1523,10 @@ public class GameView extends View {
             res.stars = engine.stars();
             progress.setStars(cfg.number, res.stars);
         }
-        if (tutorial && cfg.number >= Levels.TUTORIAL_STEPS) progress.setTutorialDone();
+        if (tutorial && firstRun && cfg.number >= Levels.FIRST_RUN_STEPS && !progress.tutorialDone()) {
+            progress.setTutorialDone();
+            host.tutorialFinished(cfg.number, false);
+        }
 
         res.lines.add(st.circlesTotal + (st.circlesTotal == 1 ? " circle" : " circles") + " · best streak x" + Math.max(1, st.maxStreak)
                 + " · biggest cluster " + Math.max(st.bestCluster, 0));
@@ -1467,7 +1554,7 @@ public class GameView extends View {
         GameState st = engine.state();
         switch (cfg.mode) {
             case TUTORIAL:
-                if (cfg.number < Levels.TUTORIAL_STEPS) {
+                if (cfg.number < tutorialSteps()) {
                     overlayButtons.add(new Button("Next", true,
                             () -> host.startGame(Levels.tutorial(cfg.number + 1), false)));
                 } else {

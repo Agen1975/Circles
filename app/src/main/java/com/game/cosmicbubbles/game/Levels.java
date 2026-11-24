@@ -3,7 +3,10 @@ package com.game.cosmicbubbles.game;
 /** Journey levels (generated from the level number) and the tutorial boards. */
 public final class Levels {
     public static final int JOURNEY_COUNT = 60;
+    /** Steps in "How to play" from the menu. */
     public static final int TUTORIAL_STEPS = 4;
+    /** Steps forced on first launch: drag and double circle. Rotation is taught by a tip in the first real game. */
+    public static final int FIRST_RUN_STEPS = 2;
 
     private Levels() {
     }

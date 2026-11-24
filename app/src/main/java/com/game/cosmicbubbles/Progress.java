@@ -141,6 +141,9 @@ public final class Progress {
     // ---- tutorial
     public boolean tutorialDone() { return p.getBoolean("tutorial", false); }
     public void setTutorialDone() { p.edit().putBoolean("tutorial", true).apply(); }
+    /** One-time in-game tips, by name. */
+    public boolean tipShown(String name) { return p.getBoolean("tip_" + name, false); }
+    public void setTipShown(String name) { p.edit().putBoolean("tip_" + name, true).apply(); }
 
     // ---- daily
     public static int today() {

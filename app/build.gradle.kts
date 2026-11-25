@@ -12,7 +12,7 @@ android {
         applicationId = "com.game.cosmicbubbles"
         minSdk = 24
         targetSdk = 36
-        versionCode = 9
+        versionCode = 10
         versionName = "2.1.0"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-8769003368118760~7668859499"
     }
@@ -54,6 +54,8 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     implementation("com.android.billingclient:billing:8.3.0")
     implementation("androidx.work:work-runtime:2.10.0")
+    // Not used directly; overrides the outdated fragment:1.1.0 pulled in transitively by play-services-basement.
+    implementation("androidx.fragment:fragment:1.9.1")
     implementation("com.google.android.gms:play-services-games-v2:22.1.0")
     implementation(platform("com.google.firebase:firebase-bom:35.2.0"))
     implementation("com.google.firebase:firebase-crashlytics")

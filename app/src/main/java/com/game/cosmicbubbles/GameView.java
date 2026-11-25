@@ -97,8 +97,8 @@ public class GameView extends View {
     private final RectF tmp = new RectF();
     private final Matrix matrix = new Matrix();
     private Shader bgShader;
-    /** Falling snow for seasonal themes, else null. */
-    private final Snow snow;
+    /** Animated background decoration (snow, stars) for themes that have one, else null. */
+    private final Backdrop backdrop;
     private SweepGradient rainbowShader;
     /** Unit-radius shaders, positioned per segment with a local matrix (no per-frame allocation). */
     private final RadialGradient shadeShader = new RadialGradient(0, 0, 1,
@@ -171,7 +171,7 @@ public class GameView extends View {
         firstRun = cfg.mode == GameConfig.Mode.TUTORIAL && !progress.tutorialDone();
         rotateTip = cfg.mode != GameConfig.Mode.TUTORIAL && cfg.startRotateTokens > 0 && !progress.tipShown("rotate");
         theme = progress.theme();
-        snow = theme.snow ? new Snow(getResources().getDisplayMetrics().density) : null;
+        backdrop = Backdrop.forTheme(theme, getResources().getDisplayMetrics().density);
         colorblind = progress.colorblind();
         fb = new Feedback(context, this);
         fb.sound = progress.sound();
@@ -371,7 +371,7 @@ public class GameView extends View {
         paint.setShader(bgShader);
         c.drawRect(0, 0, getWidth(), getHeight(), paint);
         paint.setShader(null);
-        if (snow != null) snow.draw(c, getWidth(), getHeight(), now);
+        if (backdrop != null) backdrop.draw(c, getWidth(), getHeight(), now);
 
         maybeIntroduceSpecials(now);
         computeShake(now);
@@ -398,7 +398,7 @@ public class GameView extends View {
         boolean animating = !anims.isEmpty() || dragging || Math.abs(displayedScore - engine.state().score) > 0.5f
                 || (hintMove != null && now < hintUntil) || blitzRunning() || resultsPending(now);
         if (animating) postInvalidateOnAnimation();
-        else if (snow != null) postInvalidateDelayed(Snow.FRAME_MS);
+        else if (backdrop != null) postInvalidateDelayed(backdrop.frameMs());
     }
 
     private boolean resultsPending(long now) {

@@ -23,7 +23,7 @@ final class Ui {
     }
 
     static android.graphics.drawable.Drawable background(Context c, Theme t) {
-        return Snow.background(t, c.getResources().getDisplayMetrics().density);
+        return Backdrop.background(t, c.getResources().getDisplayMetrics().density);
     }
 
     static TextView text(Context c, Theme t, String s, float sp, boolean bold, boolean dim) {

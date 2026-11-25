@@ -105,7 +105,9 @@ final class Stars extends Backdrop {
         if (w != this.w || h != this.h) resize(w, h);
         float secs = now / 1000f;
 
-        // Soft nebula haze, like the icon's purple glow.
+        // Soft nebula haze, like the icon's purple glow. Reset alpha first: the paint's alpha scales the
+        // shader, and the last sparkle drawn left it varying, which made the whole sky pulse.
+        paint.setAlpha(255);
         paint.setShader(nebulaA);
         c.drawRect(0, 0, w, h, paint);
         paint.setShader(nebulaB);

@@ -153,7 +153,19 @@ public final class Progress {
     public int totalCircles() { return p.getInt("circles", 0); }
     public void addCircles(int n) { p.edit().putInt("circles", totalCircles() + n).apply(); }
     public int gamesPlayed() { return p.getInt("games", 0); }
-    public void addGame() { p.edit().putInt("games", gamesPlayed() + 1).apply(); }
+    public void addGame() {
+        SharedPreferences.Editor e = p.edit().putInt("games", gamesPlayed() + 1);
+        int today = today();
+        if (p.getInt("last_play_day", 0) != today) e.putInt("play_days", playDays() + 1).putInt("last_play_day", today);
+        e.apply();
+    }
+
+    /** Different days with at least one finished real game (counted since 2.1.1). */
+    public int playDays() { return p.getInt("play_days", 0); }
+
+    // ---- rating prompt
+    public long reviewAskedAt() { return p.getLong("review_asked_at", 0); }
+    public void setReviewAskedAt(long t) { p.edit().putLong("review_asked_at", t).apply(); }
 
     // ---- tutorial
     public boolean tutorialDone() { return p.getBoolean("tutorial", false); }

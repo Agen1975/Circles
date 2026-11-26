@@ -68,6 +68,9 @@ public class GameView extends View {
         /** The player just earned an award: unlock it on Play Games too. */
         void awardUnlocked(Achievements.Def d);
 
+        /** A real game just ended with a new best or 3 stars: a good moment to ask for a rating. */
+        void goodResult();
+
         /** A seasonal theme was just unlocked: report it to analytics. */
         void themeUnlocked(Theme t);
 
@@ -1554,7 +1557,10 @@ public class GameView extends View {
         }
         results = res;
         buildResultButtons();
-        if (res.newBest || res.stars == 3) fb.burst(2);
+        if (res.newBest || res.stars == 3) {
+            fb.burst(2);
+            if (cfg.mode != GameConfig.Mode.TUTORIAL) host.goodResult();
+        }
     }
 
     private void buildResultButtons() {

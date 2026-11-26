@@ -202,6 +202,11 @@ public class GameActivity extends Activity implements GameView.Host {
         }
     }
 
+    @Override
+    public void goodResult() {
+        if (view != null) view.postDelayed(() -> Review.maybeAsk(this), 1500);
+    }
+
     /** tutorial_complete when the first-launch tutorial is finished; tutorial_skip (with the step) when skipped. */
     @Override
     public void tutorialFinished(int step, boolean skipped) {

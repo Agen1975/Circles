@@ -57,6 +57,7 @@ dependencies {
     // Not used directly; overrides the outdated fragment:1.1.0 pulled in transitively by play-services-basement.
     implementation("androidx.fragment:fragment:1.9.1")
     implementation("com.google.android.gms:play-services-games-v2:22.1.0")
+    implementation("com.google.android.play:review:2.0.2")
     implementation(platform("com.google.firebase:firebase-bom:35.2.0"))
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")

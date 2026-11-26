@@ -234,6 +234,12 @@ public class GameView extends View {
         fb.release();
     }
 
+    /** The current game, for analytics when the player leaves it. */
+    public GameState state() { return engine.state(); }
+
+    /** True while a game is being played: not over, no results card. */
+    public boolean inProgress() { return results == null && !engine.state().over; }
+
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets in) {
         if (Build.VERSION.SDK_INT >= 30) {

@@ -89,8 +89,8 @@ public final class Reminders {
 
     /**
      * Asks whether the player wants reminders with our own dialog first; only "Yes" opens the system permission
-     * dialog, which Android lets an app show just a couple of times. Asked on a menu visit after the first finished
-     * real game, and, after "Not now", once more after the player finishes a daily puzzle.
+     * dialog, which Android lets an app show just a couple of times. Asked after the first finished real game (on its
+     * results screen, or on a menu visit), and, after "Not now", once more after the player finishes a daily puzzle.
      */
     public static void maybeAskPermission(Activity a) {
         if (a.isFinishing() || a.isDestroyed() || hasPermission(a)) return;

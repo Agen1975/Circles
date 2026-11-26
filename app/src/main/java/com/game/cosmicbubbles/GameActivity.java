@@ -5,8 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import com.game.cosmicbubbles.game.GameConfig;
+import com.game.cosmicbubbles.game.GameState;
 import com.game.cosmicbubbles.game.Levels;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -19,6 +21,11 @@ public class GameActivity extends Activity implements GameView.Host {
     public static final int BLITZ_SECONDS = 60;
 
     private GameView view;
+    private GameConfig cfg;
+    /** Time actually spent on this screen, for game_leave. */
+    private long playedMs, resumedAt;
+    /** Moves at the last game_leave, so leaving again without playing doesn't log twice. */
+    private int leaveLoggedAtMoves = -1;
 
     public static Intent intent(Context c, GameConfig cfg, boolean resume) {
         return new Intent(c, GameActivity.class)
@@ -60,6 +67,7 @@ public class GameActivity extends Activity implements GameView.Host {
             finish();
             return;
         }
+        this.cfg = cfg;
         view = new GameView(this, this, cfg, resume);
         setContentView(view);
         if (savedInstanceState == null && !resume) logGameStart(cfg);
@@ -89,6 +97,32 @@ public class GameActivity extends Activity implements GameView.Host {
         if (view == null) return;
         view.save();
         view.setPaused(true);
+        if (resumedAt > 0) playedMs += SystemClock.elapsedRealtime() - resumedAt;
+        resumedAt = 0;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (view != null) logGameLeave();
+    }
+
+    /**
+     * game_leave: the player exited an unfinished game or switched away from the app mid-game.
+     * Shows how far players get before giving up (game_end only covers games that reach game over).
+     */
+    private void logGameLeave() {
+        if (!view.inProgress()) return;
+        GameState st = view.state();
+        if (st.moves == leaveLoggedAtMoves) return;
+        leaveLoggedAtMoves = st.moves;
+        Bundle b = gameParams(cfg);
+        b.putLong("score", st.score);
+        b.putLong("moves", st.moves);
+        b.putLong("circles", st.circlesTotal);
+        b.putLong("seconds", playedMs / 1000);
+        b.putString("how", isFinishing() ? "exit" : "background");
+        FirebaseAnalytics.getInstance(this).logEvent("game_leave", b);
     }
 
     @Override
@@ -96,6 +130,7 @@ public class GameActivity extends Activity implements GameView.Host {
         super.onResume();
         if (view == null) return;
         view.setPaused(false);
+        resumedAt = SystemClock.elapsedRealtime();
         Reminders.onAppOpened(this);
     }
 
@@ -161,6 +196,10 @@ public class GameActivity extends Activity implements GameView.Host {
         b.putLong("success", won ? 1 : 0);
         FirebaseAnalytics fa = FirebaseAnalytics.getInstance(this);
         fa.logEvent("game_end", b);
+        // New players rarely go back to the menu, so ask about reminders here too, once the results card is up.
+        if (cfg.mode != GameConfig.Mode.TUTORIAL) {
+            view.postDelayed(() -> Reminders.maybeAskPermission(this), 2500);
+        }
     }
 
     /** tutorial_complete when the first-launch tutorial is finished; tutorial_skip (with the step) when skipped. */

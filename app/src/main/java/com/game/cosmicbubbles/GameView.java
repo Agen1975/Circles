@@ -1559,6 +1559,11 @@ public class GameView extends View {
                 if (cfg.number < tutorialSteps()) {
                     overlayButtons.add(new Button("Next", true,
                             () -> host.startGame(Levels.tutorial(cfg.number + 1), false)));
+                    if (firstRun) {
+                        // First launch: offer the way out here, where it's easy to see, instead of "Menu".
+                        overlayButtons.add(new Button("Skip tutorial", false, this::skipTutorial));
+                        return;
+                    }
                 } else {
                     overlayButtons.add(new Button("Start playing", true,
                             () -> host.startGame(GameConfig.classic(System.nanoTime()), false)));

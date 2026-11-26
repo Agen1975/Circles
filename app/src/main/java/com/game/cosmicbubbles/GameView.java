@@ -1,5 +1,6 @@
 package com.game.cosmicbubbles;
 
+import java.util.Locale;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -198,14 +199,14 @@ public class GameView extends View {
     // ================================================================== lifecycle
 
     private String saveKey() {
-        return cfg.mode == GameConfig.Mode.DAILY ? "daily_" + cfg.number : cfg.mode.name().toLowerCase();
+        return cfg.mode == GameConfig.Mode.DAILY ? "daily_" + cfg.number : cfg.mode.name().toLowerCase(Locale.ROOT);
     }
 
     private String bestKey() {
         switch (cfg.mode) {
             case JOURNEY: return "journey_" + cfg.number;
             case DAILY: return "daily";
-            default: return cfg.mode.name().toLowerCase();
+            default: return cfg.mode.name().toLowerCase(Locale.ROOT);
         }
     }
 
@@ -1609,7 +1610,7 @@ public class GameView extends View {
         switch (cfg.mode) {
             case DAILY: head = "Daily " + dateLabel(cfg.number); break;
             case JOURNEY: head = "Journey level " + cfg.number + (st.won ? " " + stars(engine.stars()) : ""); break;
-            default: head = cfg.mode.name().charAt(0) + cfg.mode.name().substring(1).toLowerCase(); break;
+            default: head = cfg.mode.name().charAt(0) + cfg.mode.name().substring(1).toLowerCase(Locale.ROOT); break;
         }
         return getContext().getString(R.string.app_name) + " · " + head + "\n" + st.score + " points · "
                 + st.circlesTotal + (st.circlesTotal == 1 ? " circle" : " circles") + " · streak x" + Math.max(1, st.maxStreak) + "\n" + dots;

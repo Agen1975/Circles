@@ -15,6 +15,23 @@ public final class Progress {
         if (!p.getBoolean("init", false)) {
             p.edit().putBoolean("init", true).putInt("undo", START_TOKENS).putInt("hint", START_TOKENS).apply();
         }
+        if (!p.getBoolean("keys_root_locale", false)) fixTurkishKeys();
+    }
+
+    /** Before 2.1.1, mode keys were lower-cased with the device locale, so Turkish devices stored
+     *  "best_classıc" / "save_blıtz" (dotless ı) that the menu never read. Move them to the real keys. */
+    private void fixTurkishKeys() {
+        SharedPreferences.Editor e = p.edit();
+        for (java.util.Map.Entry<String, ?> en : p.getAll().entrySet()) {
+            String k = en.getKey();
+            if (k.indexOf('\u0131') < 0 || !(k.startsWith("best_") || k.startsWith("save_"))) continue;
+            String fixed = k.replace('\u0131', 'i');
+            Object v = en.getValue();
+            if (v instanceof Integer) e.putInt(fixed, Math.max((Integer) v, p.getInt(fixed, 0)));
+            else if (v instanceof String && !p.contains(fixed)) e.putString(fixed, (String) v);
+            e.remove(k);
+        }
+        e.putBoolean("keys_root_locale", true).apply();
     }
 
     public static Progress get(Context c) {

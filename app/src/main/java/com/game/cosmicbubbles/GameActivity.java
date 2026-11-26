@@ -1,5 +1,6 @@
 package com.game.cosmicbubbles;
 
+import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -77,7 +78,7 @@ public class GameActivity extends Activity implements GameView.Host {
     /** mode, plus level for Journey levels and tutorial steps. */
     private static Bundle gameParams(GameConfig cfg) {
         Bundle b = new Bundle();
-        b.putString("mode", cfg.mode.name().toLowerCase());
+        b.putString("mode", cfg.mode.name().toLowerCase(Locale.ROOT));
         if (cfg.mode == GameConfig.Mode.JOURNEY || cfg.mode == GameConfig.Mode.TUTORIAL) b.putLong("level", cfg.number);
         return b;
     }
